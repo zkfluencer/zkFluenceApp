@@ -1,0 +1,306 @@
+{
+	"info": {
+		"_postman_id": "tiktok-api-collection",
+		"name": "TikTok API - zkFluence",
+		"description": "Colección de endpoints para interactuar con la API de TikTok y generar proofs con vlayer",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get User Profile",
+			"item": [
+				{
+					"name": "GET - Get User Profile",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/tiktok/get-user-profile?handle=@malu.ag",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"tiktok",
+								"get-user-profile"
+							],
+							"query": [
+								{
+									"key": "handle",
+									"value": "@malu.ag",
+									"description": "Handle de TikTok (con o sin @)"
+								}
+							]
+						},
+						"description": "Obtiene el perfil de usuario de TikTok con proof generado y verificado"
+					},
+					"response": []
+				},
+				{
+					"name": "POST - Get User Profile",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"handle\": \"@malu.ag\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/tiktok/get-user-profile",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"tiktok",
+								"get-user-profile"
+							]
+						},
+						"description": "Obtiene el perfil de usuario de TikTok con proof generado y verificado"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints para obtener información del perfil de usuario"
+		},
+		{
+			"name": "Get Demographics",
+			"item": [
+				{
+					"name": "GET - Get Demographics",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/tiktok/get-demographics?handle=@malu.ag",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"tiktok",
+								"get-demographics"
+							],
+							"query": [
+								{
+									"key": "handle",
+									"value": "@malu.ag",
+									"description": "Handle de TikTok (con o sin @)"
+								}
+							]
+						},
+						"description": "Obtiene los demográficos de audiencia del creador de TikTok con proof"
+					},
+					"response": []
+				},
+				{
+					"name": "POST - Get Demographics",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"handle\": \"@malu.ag\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/tiktok/get-demographics",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"tiktok",
+								"get-demographics"
+							]
+						},
+						"description": "Obtiene los demográficos de audiencia del creador de TikTok con proof"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints para obtener demográficos de audiencia"
+		},
+		{
+			"name": "Get Following",
+			"item": [
+				{
+					"name": "GET - Get Following",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/tiktok/get-following?handle=@malu.ag",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"tiktok",
+								"get-following"
+							],
+							"query": [
+								{
+									"key": "handle",
+									"value": "@malu.ag",
+									"description": "Handle de TikTok (con o sin @)"
+								}
+							]
+						},
+						"description": "Obtiene la lista de usuarios que sigue el creador en TikTok con proof"
+					},
+					"response": []
+				},
+				{
+					"name": "POST - Get Following",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"handle\": \"@malu.ag\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/tiktok/get-following",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"tiktok",
+								"get-following"
+							]
+						},
+						"description": "Obtiene la lista de usuarios que sigue el creador en TikTok con proof"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints para obtener la lista de usuarios que sigue"
+		},
+		{
+			"name": "Get Video Info",
+			"item": [
+				{
+					"name": "GET - Get Video Info",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/tiktok/get-video-info?videoURL=https://www.tiktok.com/@malu.ag/video/7547870508402871557",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"tiktok",
+								"get-video-info"
+							],
+							"query": [
+								{
+									"key": "videoURL",
+									"value": "https://www.tiktok.com/@malu.ag/video/7547870508402871557",
+									"description": "URL completa del video de TikTok"
+								}
+							]
+						},
+						"description": "Obtiene información del video y comentarios de TikTok con proofs (ejecuta ambas llamadas en paralelo)"
+					},
+					"response": []
+				},
+				{
+					"name": "POST - Get Video Info",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"videoURL\": \"https://www.tiktok.com/@malu.ag/video/7547870508402871557\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/tiktok/get-video-info",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"tiktok",
+								"get-video-info"
+							]
+						},
+						"description": "Obtiene información del video y comentarios de TikTok con proofs (ejecuta ambas llamadas en paralelo)"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints para obtener información de video y comentarios"
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:3000",
+			"type": "string"
+		}
+	]
+}
+

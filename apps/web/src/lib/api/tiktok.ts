@@ -101,6 +101,9 @@ export const TIKTOK_ENDPOINTS: Record<string, TikTokEndpoint> = {
     path: '/profile',
     method: 'GET',
     description: 'Obtiene información del perfil de usuario',
+    params: {
+      handle: '', // Requerido: @username
+    },
   },
 
   // Demográficos de audiencia
