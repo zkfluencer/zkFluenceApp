@@ -7,12 +7,8 @@ const nextConfig = {
     config.externals.push('pino-pretty', 'lokijs', 'encoding')
     return config
   },
-  // Point to monorepo root where pnpm-workspace.yaml is located
-  experimental: {
-    turbo: {
-      root: path.resolve(__dirname, '../../'),
-    },
-  },
+  // Disable Turbopack for now - use Webpack instead
+  // The experimental.turbo config is removed to allow Webpack to work
 };
 
 module.exports = nextConfig;
