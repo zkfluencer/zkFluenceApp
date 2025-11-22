@@ -45,6 +45,25 @@ export interface VerifyResponse {
   };
 }
 
+export interface CompressionExtractionConfig {
+  'response.body'?: {
+    jmespath: string[];
+  };
+  [key: string]: any; // Permite otras configuraciones de extracción
+}
+
+export interface CompressionConfig {
+  zkProverUrl?: string;
+  clientId?: string;
+  apiKey?: string;
+  timeout?: number; // En milisegundos, default 85000
+}
+
+export interface CompressedProofResponse {
+  // La estructura exacta depende de la respuesta del ZK Prover
+  [key: string]: any;
+}
+
 /**
  * Genera un Web Proof para una llamada API
  */
@@ -139,6 +158,84 @@ export function extractResponseBody(verification: VerifyResponse): any {
 }
 
 /**
+ * Comprime un Web Proof y extrae datos específicos usando JMESPath
+ * Útil para generar pruebas ZK más pequeñas y eficientes
+ */
+export async function compressProof(
+  presentation: ProveResponse,
+  extraction: CompressionExtractionConfig,
+  compressionConfig?: CompressionConfig
+): Promise<CompressedProofResponse> {
+  if (!presentation) {
+    throw new Error('Presentation data is required');
+  }
+
+  if (!extraction || Object.keys(extraction).length === 0) {
+    throw new Error('Extraction configuration is required');
+  }
+
+  const zkProverUrl =
+    compressionConfig?.zkProverUrl ||
+    process.env.ZK_PROVER_API_URL ||
+    'https://zk-prover.vlayer.xyz/api/v0';
+
+  const clientId =
+    compressionConfig?.clientId ||
+    process.env.VLAYER_CLIENT_ID ||
+    '';
+
+  const apiKey =
+    compressionConfig?.apiKey ||
+    process.env.VLAYER_API_KEY ||
+    '';
+
+  const timeout = compressionConfig?.timeout || 85000;
+
+  const requestBody = {
+    presentation,
+    extraction,
+  };
+
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+    const response = await fetch(`${zkProverUrl}/compress-web-proof`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-client-id': clientId,
+        'Authorization': `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify(requestBody),
+      signal: controller.signal,
+    });
+
+    clearTimeout(timeoutId);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(
+        `Error al comprimir proof: ${response.status} ${response.statusText} - ${errorText}`
+      );
+    }
+
+    return await response.json();
+  } catch (error) {
+    if (error instanceof Error) {
+      // Manejar errores de timeout
+      if (error.name === 'AbortError' || error.name === 'TimeoutError') {
+        throw new Error(
+          `Request timed out. ZK proof generation took too long to complete (${timeout}ms). Please try again.`
+        );
+      }
+      throw error;
+    }
+    throw new Error('Failed to compress web proof');
+  }
+}
+
+/**
  * Obtiene la configuración por defecto desde variables de entorno
  */
 export function getDefaultConfig(): VlayerConfig {
@@ -160,6 +257,11 @@ export function createVlayerClient(config?: VlayerConfig) {
     verify: (presentation: ProveResponse) => verify(finalConfig, presentation),
     proveAndVerify: (request: ProveRequest) => proveAndVerify(finalConfig, request),
     extractResponseBody,
+    compressProof: (
+      presentation: ProveResponse,
+      extraction: CompressionExtractionConfig,
+      compressionConfig?: CompressionConfig
+    ) => compressProof(presentation, extraction, compressionConfig),
   };
 }
 
