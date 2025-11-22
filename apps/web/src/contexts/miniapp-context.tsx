@@ -55,13 +55,24 @@ export function MiniAppProvider({ children, addMiniAppOnLoad }: MiniAppProviderP
 
   const handleAddMiniApp = useCallback(async () => {
     try {
+      // Check if SDK is properly initialized and we're in a Farcaster context
+      if (!sdk || !sdk.actions || typeof sdk.actions.addFrame !== 'function') {
+        console.warn('SDK not available or not in Farcaster context');
+        return null;
+      }
+
       const result = await sdk.actions.addFrame();
-      if (result) {
+      if (result && result.result) {
         return result;
       }
+      console.warn('addFrame returned undefined or invalid result');
       return null;
     } catch (error) {
-      console.error("[error] adding frame", error);
+      // Only log error if it's not the "not authorized" error during development
+      const errorMessage = (error as Error).message || String(error);
+      if (!errorMessage.includes('has not been authorized')) {
+        console.error("[error] adding frame", error);
+      }
       return null;
     }
   }, []);
