@@ -2,13 +2,15 @@
 // Obtiene el perfil de usuario de TikTok con proof
 
 import { NextRequest, NextResponse } from 'next/server';
-import { createTikTokClient } from '@/lib/api/tiktok';
-import { validateHandle, normalizeHandle } from '@/lib/utils/handle-validation';
+import { createTikTokClient, getTikTokConfig, TIKTOK_ENDPOINTS, callTikTokApiDirectly } from '@/lib/api/tiktok';
+import { validateHandle, cleanHandle } from '@/lib/utils/handle-validation';
 
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
     const handle = searchParams.get('handle');
+    // Parámetro opcional para controlar si se genera proof (default: true)
+    const generateProof = searchParams.get('generateProof') !== 'false';
 
     const validationError = validateHandle(handle);
     if (validationError) {
@@ -19,11 +21,46 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'handle is required' }, { status: 400 });
     }
 
+    // TikTok API requiere el handle SIN @
+    const cleanHandleValue = cleanHandle(handle);
+    const config = getTikTokConfig();
+    const endpoint = TIKTOK_ENDPOINTS.getUserProfile;
+
+    // Hacer llamada directa a la API de TikTok
+    console.log('🔍 Llamada directa a TikTok API');
+    const directCall = await callTikTokApiDirectly(
+      config,
+      endpoint,
+      { handle: cleanHandleValue }
+    );
+
+    // Si la llamada directa falla, retornar el error
+    if (directCall.status !== 200) {
+      return NextResponse.json(
+        {
+          error: `TikTok API returned status ${directCall.status}`,
+          tiktokResponse: directCall.response,
+        },
+        { status: directCall.status }
+      );
+    }
+
+    // Si no se requiere proof, retornar solo la respuesta directa
+    if (!generateProof) {
+      return NextResponse.json({
+        success: true,
+        data: directCall.response,
+        url: directCall.url,
+      });
+    }
+
+    // Generar la proof con vlayer
+    console.log('🔍 Generando proof con vlayer');
     const client = createTikTokClient();
 
     const result = await client.proveEndpoint(
       'getUserProfile',
-      { handle: normalizeHandle(handle) },
+      { handle: cleanHandleValue },
       {
         verify: true,
         extractData: true,
@@ -40,7 +77,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       success: true,
       endpoint: result.endpoint,
-      data: result.data,
+      data: result.data, // Solo contiene: createTime, verified, uniqueId, statsV2
       proof: result.proof,
       verification: result.verification,
     });
@@ -67,7 +104,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { handle } = body;
+    const { handle, generateProof = true } = body;
 
     const validationError = validateHandle(handle);
     if (validationError) {
@@ -78,11 +115,46 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'handle is required' }, { status: 400 });
     }
 
+    // TikTok API requiere el handle SIN @
+    const cleanHandleValue = cleanHandle(handle);
+    const config = getTikTokConfig();
+    const endpoint = TIKTOK_ENDPOINTS.getUserProfile;
+
+    // Hacer llamada directa a la API de TikTok
+    console.log('🔍 Llamada directa a TikTok API');
+    const directCall = await callTikTokApiDirectly(
+      config,
+      endpoint,
+      { handle: cleanHandleValue }
+    );
+
+    // Si la llamada directa falla, retornar el error
+    if (directCall.status !== 200) {
+      return NextResponse.json(
+        {
+          error: `TikTok API returned status ${directCall.status}`,
+          tiktokResponse: directCall.response,
+        },
+        { status: directCall.status }
+      );
+    }
+
+    // Si no se requiere proof, retornar solo la respuesta directa
+    if (!generateProof) {
+      return NextResponse.json({
+        success: true,
+        data: directCall.response,
+        url: directCall.url,
+      });
+    }
+
+    // Generar la proof con vlayer
+    console.log('🔍 Generando proof con vlayer');
     const client = createTikTokClient();
 
     const result = await client.proveEndpoint(
       'getUserProfile',
-      { handle: normalizeHandle(handle) },
+      { handle: cleanHandleValue },
       {
         verify: true,
         extractData: true,
@@ -99,7 +171,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       endpoint: result.endpoint,
-      data: result.data,
+      data: result.data, // Solo contiene: createTime, verified, uniqueId, statsV2
       proof: result.proof,
       verification: result.verification,
     });

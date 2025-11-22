@@ -11,7 +11,7 @@ export interface VlayerConfig {
 
 export interface ProveRequest {
   url: string;
-  headers?: Record<string, string> | [string, string][];
+  headers?: Record<string, string> | [string, string][] | string[];
   method?: string;
   body?: string;
 }
@@ -72,6 +72,47 @@ export async function prove(
   request: ProveRequest
 ): Promise<ProveResponse> {
   const baseUrl = config.baseUrl || 'https://web-prover.vlayer.xyz';
+  
+  // Formatear headers: vlayer espera un array de strings con formato "key: value"
+  // o un array vacío si no hay headers
+  let formattedHeaders: string[] = [];
+  if (request.headers) {
+    if (Array.isArray(request.headers)) {
+      // Verificar si es array de tuplas [string, string][] o array de strings string[]
+      if (request.headers.length > 0 && Array.isArray(request.headers[0])) {
+        // Es array de tuplas, convertir a formato "key: value"
+        formattedHeaders = (request.headers as [string, string][]).map(
+          ([key, value]) => `${key}: ${value}`
+        );
+      } else {
+        // Ya es array de strings
+        formattedHeaders = request.headers as string[];
+      }
+    } else {
+      // Convertir Record<string, string> a array de strings "key: value"
+      formattedHeaders = Object.entries(request.headers).map(
+        ([key, value]) => `${key}: ${value}`
+      );
+    }
+  }
+
+  const requestBody = {
+    url: request.url,
+    headers: formattedHeaders,
+    method: request.method || 'GET',
+    body: request.body || null,
+  };
+
+  // Log para debugging (solo en desarrollo)
+  if (process.env.NODE_ENV === 'development') {
+    console.log('vlayer prove request:', {
+      url: requestBody.url,
+      method: requestBody.method,
+      headersCount: formattedHeaders.length,
+      hasBody: !!requestBody.body,
+    });
+  }
+
   const response = await fetch(`${baseUrl}/api/v1/prove`, {
     method: 'POST',
     headers: {
@@ -79,26 +120,42 @@ export async function prove(
       'x-client-id': config.clientId,
       'Authorization': `Bearer ${config.apiKey}`,
     },
-    body: JSON.stringify({
-      url: request.url,
-      headers: Array.isArray(request.headers)
-        ? request.headers
-        : request.headers
-        ? Object.entries(request.headers).map(([key, value]) => [key, value])
-        : [],
-      method: request.method || 'GET',
-      body: request.body || null,
-    }),
+    body: JSON.stringify(requestBody),
   });
 
   if (!response.ok) {
     const errorText = await response.text();
-    throw new Error(
-      `Error al generar proof: ${response.status} ${response.statusText} - ${errorText}`
-    );
+    let errorMessage = `Error al generar proof: ${response.status} ${response.statusText}`;
+    
+    try {
+      const errorJson = JSON.parse(errorText);
+      if (errorJson.error?.message) {
+        errorMessage += ` - ${errorJson.error.message}`;
+      } else {
+        errorMessage += ` - ${errorText}`;
+      }
+    } catch {
+      errorMessage += ` - ${errorText}`;
+    }
+    
+    console.error('vlayer prove error:', {
+      status: response.status,
+      statusText: response.statusText,
+      errorText,
+      url: request.url,
+      method: request.method,
+    });
+    
+    throw new Error(errorMessage);
   }
 
-  return await response.json();
+  const proofResponse = await response.json();
+  
+  // Log de la respuesta completa del endpoint de prove de vlayer
+  console.log('📦 Respuesta completa del endpoint /prove de vlayer:');
+  console.log(JSON.stringify(proofResponse, null, 2));
+  
+  return proofResponse;
 }
 
 /**

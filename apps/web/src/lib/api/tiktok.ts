@@ -8,10 +8,12 @@ import {
   type ProveRequest,
   type ProveResponse,
   type VerifyResponse,
+  type CompressionExtractionConfig,
   prove,
   verify,
   proveAndVerify,
   extractResponseBody,
+  compressProof,
   getDefaultConfig,
   createVlayerClient,
 } from './vlayer';
@@ -36,6 +38,7 @@ export interface TikTokProofResult {
   proof: ProveResponse;
   verification?: VerifyResponse;
   data?: any;
+  compressedProof?: any;
   error?: Error;
 }
 
@@ -160,13 +163,26 @@ export function buildTikTokUrl(
   endpoint: TikTokEndpoint,
   params?: Record<string, string>
 ): string {
-  const url = new URL(endpoint.path, config.baseUrl);
+  // Construir la URL base + path correctamente
+  let baseUrl = config.baseUrl.endsWith('/')
+    ? config.baseUrl.slice(0, -1)
+    : config.baseUrl;
+  
+  // Asegurar que el path comience con /
+  let path = endpoint.path.startsWith('/')
+    ? endpoint.path
+    : `/${endpoint.path}`;
+  
+  // Concatenar baseUrl + path manualmente para evitar problemas con new URL()
+  const fullUrl = `${baseUrl}${path}`;
+  const url = new URL(fullUrl);
   
   // Agregar parámetros de query (solo si tienen valor)
+  // Los params pasados tienen prioridad sobre los del endpoint
   const queryParams = { ...endpoint.params, ...params };
   Object.entries(queryParams).forEach(([key, value]) => {
-    if (value && value.trim() !== '') {
-      url.searchParams.append(key, value);
+    if (value && typeof value === 'string' && value.trim() !== '') {
+      url.searchParams.append(key, value.trim());
     }
   });
 
@@ -174,45 +190,177 @@ export function buildTikTokUrl(
 }
 
 /**
+ * Hace una llamada directa a la API de TikTok sin usar vlayer
+ * Útil para testing y debugging
+ */
+export async function callTikTokApiDirectly(
+  config: TikTokConfig,
+  endpoint: TikTokEndpoint,
+  params?: Record<string, string>
+): Promise<{ url: string; response: any; status: number }> {
+  const url = buildTikTokUrl(config, endpoint, params);
+  
+  // Construir headers
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+  };
+  
+  if (config.headers) {
+    Object.assign(headers, config.headers);
+  }
+  
+  if (config.apiKey) {
+    headers['x-api-key'] = config.apiKey;
+  }
+
+  console.log('📞 Llamada directa a TikTok API:');
+  console.log('   URL completa:', url);
+  console.log('   Base URL:', config.baseUrl);
+  console.log('   Path:', endpoint.path);
+  console.log('   Params:', params);
+  console.log('   Method:', endpoint.method || 'GET');
+  console.log('   Headers:', headers);
+
+  const response = await fetch(url, {
+    method: endpoint.method || 'GET',
+    headers,
+    body: endpoint.body ? JSON.stringify(endpoint.body) : undefined,
+  });
+
+  const status = response.status;
+  let responseData: any;
+  
+  try {
+    const text = await response.text();
+    try {
+      responseData = JSON.parse(text);
+    } catch {
+      responseData = text;
+    }
+  } catch (error) {
+    responseData = null;
+  }
+
+  console.log('📥 Respuesta de TikTok API:');
+  console.log('   Status:', status);
+  console.log('   Response:', JSON.stringify(responseData, null, 2));
+
+  return {
+    url,
+    response: responseData,
+    status,
+  };
+}
+
+/**
  * Genera un proof para un endpoint específico de TikTok
  */
+/**
+ * Configuración de extracción para el perfil de usuario de TikTok
+ * Extrae solo: createTime, verified, uniqueId, y statsV2
+ */
+export function getUserProfileExtractionConfig(): CompressionExtractionConfig {
+  return {
+    'response.body': {
+      jmespath: [
+        'user.createTime',
+        'user.verified',
+        'user.uniqueId',
+        'statsV2',
+      ],
+    },
+  };
+}
+
 export async function proveTikTokEndpoint(
   tiktokConfig: TikTokConfig,
   vlayerConfig: VlayerConfig,
   endpoint: TikTokEndpoint,
   params?: Record<string, string>,
-  options?: { verify?: boolean; extractData?: boolean }
+  options?: { verify?: boolean; extractData?: boolean; compress?: boolean }
 ): Promise<TikTokProofResult> {
   try {
+    // Validar configuración
+    if (!tiktokConfig.baseUrl) {
+      throw new Error('TikTok API baseUrl is required');
+    }
+
     const url = buildTikTokUrl(tiktokConfig, endpoint, params);
     
-    // Construir headers como array de tuplas [string, string][]
-    const headers: [string, string][] = [];
+    // Construir headers como objeto Record<string, string>
+    const headers: Record<string, string> = {};
     if (tiktokConfig.headers) {
-      Object.entries(tiktokConfig.headers).forEach(([key, value]) => {
-        headers.push([key, value]);
-      });
+      Object.assign(headers, tiktokConfig.headers);
     }
     if (tiktokConfig.apiKey) {
-      headers.push(['x-api-key', tiktokConfig.apiKey]);
+      headers['x-api-key'] = tiktokConfig.apiKey;
+    }
+
+    // Log para debugging (solo en desarrollo)
+    if (process.env.NODE_ENV === 'development') {
+      console.log('TikTok Proof Request:', {
+        url,
+        method: endpoint.method || 'GET',
+        hasHeaders: Object.keys(headers).length > 0,
+        headersKeys: Object.keys(headers),
+        endpoint: endpoint.name,
+      });
     }
 
     const request: ProveRequest = {
       url,
       method: endpoint.method || 'GET',
-      headers: headers.length > 0 ? headers : undefined,
+      headers: Object.keys(headers).length > 0 ? headers : undefined,
       body: endpoint.body,
     };
 
     if (options?.verify) {
       const { proof, verification } = await proveAndVerify(vlayerConfig, request);
       
+      // Log del proof generado por vlayer
+      console.log('📦 Proof generado por vlayer:');
+      console.log(JSON.stringify(proof, null, 2));
+      
+      // Log de la verificación
+      if (verification) {
+        console.log('✅ Verificación del proof:');
+        console.log(JSON.stringify(
+          {
+            success: verification.success,
+            serverDomain: verification.serverDomain,
+            notaryKeyFingerprint: verification.notaryKeyFingerprint,
+            request: verification.request,
+            response: {
+              status: verification.response.status,
+              headers: verification.response.headers,
+              bodyLength: verification.response.body?.length || 0,
+              bodyPreview: verification.response.body?.substring(0, 200) || '',
+            },
+          },
+          null,
+          2
+        ));
+      }
+      
       let data: any = undefined;
+
       if (options.extractData && verification) {
         try {
-          data = extractResponseBody(verification);
+          const fullData = extractResponseBody(verification);
+          // Extraer solo los campos que nos interesan para getUserProfile
+          if (endpoint.name === 'getUserProfile') {
+            data = {
+              createTime: fullData?.user?.createTime,
+              verified: fullData?.user?.verified,
+              uniqueId: fullData?.user?.uniqueId,
+              statsV2: fullData?.statsV2,
+            };
+          } else {
+            data = fullData;
+          }
         } catch (error) {
           // Si no se puede parsear, dejamos data como undefined
+          console.warn(`No se pudo extraer el body para ${endpoint.name}:`, error);
         }
       }
 
@@ -230,6 +378,7 @@ export async function proveTikTokEndpoint(
       };
     }
   } catch (error) {
+    console.error(`Error en proveTikTokEndpoint para ${endpoint.name}:`, error);
     return {
       endpoint: endpoint.name,
       proof: {} as ProveResponse, // Placeholder
@@ -327,9 +476,42 @@ export function extractVideoInfo(data: any): TikTokVideoInfo | null {
  * Helper para crear una configuración de TikTok desde variables de entorno
  */
 export function getTikTokConfig(): TikTokConfig {
+  const baseUrl = process.env.TIKTOK_API_BASE_URL;
+  const apiKey = process.env.TIKTOK_API_KEY;
+
+  // Asegurar que la baseUrl tenga el formato correcto
+  let finalBaseUrl = baseUrl || 'https://api.scrapecreators.com/v1/tiktok';
+  
+  // Normalizar la URL (remover trailing slash)
+  finalBaseUrl = finalBaseUrl.endsWith('/')
+    ? finalBaseUrl.slice(0, -1)
+    : finalBaseUrl;
+
+  // Si la URL no incluye /v1/tiktok, agregarlo
+  if (!finalBaseUrl.includes('/v1/tiktok')) {
+    // Si termina con /v1, agregar /tiktok
+    if (finalBaseUrl.endsWith('/v1')) {
+      finalBaseUrl = `${finalBaseUrl}/tiktok`;
+    } else if (!finalBaseUrl.endsWith('/tiktok')) {
+      // Si no termina con /tiktok, agregar /v1/tiktok
+      finalBaseUrl = `${finalBaseUrl}/v1/tiktok`;
+    }
+    console.warn(
+      `TIKTOK_API_BASE_URL ajustada a: ${finalBaseUrl}. Asegúrate de que la variable de entorno incluya /v1/tiktok`
+    );
+  }
+
+  if (!baseUrl) {
+    console.warn('TIKTOK_API_BASE_URL no está definida, usando valor por defecto:', finalBaseUrl);
+  }
+
+  if (!apiKey) {
+    console.warn('TIKTOK_API_KEY no está definida');
+  }
+
   return {
-    baseUrl: process.env.TIKTOK_API_BASE_URL as string,
-    apiKey: process.env.TIKTOK_API_KEY as string,
+    baseUrl: finalBaseUrl,
+    apiKey: apiKey,
     headers: {
       'Content-Type': 'application/json',
     },
@@ -354,7 +536,7 @@ export function createTikTokClient(
     proveEndpoint: (
       endpointName: string,
       params?: Record<string, string>,
-      options?: { verify?: boolean; extractData?: boolean }
+      options?: { verify?: boolean; extractData?: boolean; compress?: boolean }
     ) => {
       const endpoint = TIKTOK_ENDPOINTS[endpointName];
       if (!endpoint) {
