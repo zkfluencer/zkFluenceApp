@@ -1,0 +1,446 @@
+{
+	"info": {
+		"_postman_id": "tiktok-api-collection",
+		"name": "TikTok API - zkFluence",
+		"description": "Colección de endpoints para interactuar con la API de TikTok y generar proofs con vlayer",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get User Profile",
+			"item": [
+				{
+					"name": "GET - Get User Profile",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/tiktok/get-user-profile?handle=@malu.ag&generateProof=true",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"tiktok",
+								"get-user-profile"
+							],
+							"query": [
+								{
+									"key": "handle",
+									"value": "@malu.ag",
+									"description": "Handle de TikTok (con o sin @)"
+								},
+								{
+									"key": "generateProof",
+									"value": "true",
+									"description": "Si se genera proof con vlayer (default: true). Usar false para solo obtener datos sin proof."
+								}
+							]
+						},
+						"description": "Obtiene el perfil de usuario de TikTok con proof generado y verificado"
+					},
+					"response": []
+				},
+				{
+					"name": "POST - Get User Profile",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"handle\": \"@malu.ag\",\n  \"generateProof\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/tiktok/get-user-profile",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"tiktok",
+								"get-user-profile"
+							]
+						},
+						"description": "Obtiene el perfil de usuario de TikTok con proof generado y verificado"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints para obtener información del perfil de usuario"
+		},
+		{
+			"name": "Get Demographics",
+			"item": [
+				{
+					"name": "GET - Get Demographics",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/tiktok/get-demographics?handle=@malu.ag&generateProof=true",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"tiktok",
+								"get-demographics"
+							],
+							"query": [
+								{
+									"key": "handle",
+									"value": "@malu.ag",
+									"description": "Handle de TikTok (con o sin @)"
+								},
+								{
+									"key": "generateProof",
+									"value": "true",
+									"description": "Si se genera proof con vlayer (default: true). Usar false para solo obtener datos sin proof."
+								}
+							]
+						},
+						"description": "Obtiene los demográficos de audiencia del creador de TikTok con proof"
+					},
+					"response": []
+				},
+				{
+					"name": "POST - Get Demographics",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"handle\": \"@malu.ag\",\n  \"generateProof\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/tiktok/get-demographics",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"tiktok",
+								"get-demographics"
+							]
+						},
+						"description": "Obtiene los demográficos de audiencia del creador de TikTok con proof"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints para obtener demográficos de audiencia"
+		},
+		{
+			"name": "Get Following",
+			"item": [
+				{
+					"name": "GET - Get Following",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/tiktok/get-following?handle=@malu.ag&generateProof=true",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"tiktok",
+								"get-following"
+							],
+							"query": [
+								{
+									"key": "handle",
+									"value": "@malu.ag",
+									"description": "Handle de TikTok (con o sin @)"
+								},
+								{
+									"key": "generateProof",
+									"value": "true",
+									"description": "Si se genera proof con vlayer (default: true). Usar false para solo obtener datos sin proof."
+								}
+							]
+						},
+						"description": "Obtiene la lista de usuarios que sigue el creador en TikTok con proof"
+					},
+					"response": []
+				},
+				{
+					"name": "POST - Get Following",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"handle\": \"@malu.ag\",\n  \"generateProof\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/tiktok/get-following",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"tiktok",
+								"get-following"
+							]
+						},
+						"description": "Obtiene la lista de usuarios que sigue el creador en TikTok con proof"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints para obtener la lista de usuarios que sigue"
+		},
+		{
+			"name": "Get Video Info",
+			"item": [
+				{
+					"name": "GET - Get Video Info",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/tiktok/get-video-info?videoURL=https://www.tiktok.com/@malu.ag/video/7547870508402871557&generateProof=true",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"tiktok",
+								"get-video-info"
+							],
+							"query": [
+								{
+									"key": "videoURL",
+									"value": "https://www.tiktok.com/@malu.ag/video/7547870508402871557",
+									"description": "URL completa del video de TikTok"
+								},
+								{
+									"key": "generateProof",
+									"value": "true",
+									"description": "Si se genera proof con vlayer (default: true). Usar false para solo obtener datos sin proof."
+								}
+							]
+						},
+						"description": "Obtiene información del video y comentarios de TikTok con proofs (ejecuta ambas llamadas en paralelo)"
+					},
+					"response": []
+				},
+				{
+					"name": "POST - Get Video Info",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"videoURL\": \"https://www.tiktok.com/@malu.ag/video/7547870508402871557\",\n  \"generateProof\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/tiktok/get-video-info",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"tiktok",
+								"get-video-info"
+							]
+						},
+						"description": "Obtiene información del video y comentarios de TikTok con proofs (ejecuta ambas llamadas en paralelo)"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints para obtener información de video y comentarios"
+		},
+		{
+			"name": "Vlayer - Verify Proof",
+			"item": [
+				{
+					"name": "POST - Verify Proof",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"presentation\": {\n    \"data\": \"014000000000000000...\",\n    \"version\": \"0.1.0-alpha.12\",\n    \"meta\": {\n      \"notaryUrl\": \"https://test-notary.vlayer.xyz/v0.1.0-alpha.12\"\n    }\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/vlayer/verify",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"vlayer",
+								"verify"
+							]
+						},
+						"description": "Verifica un Web Proof generado previamente. Valida la integridad del transcript HTTPS, la firma del notario, el origen de los datos y el certificado SSL."
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints para verificar Web Proofs generados"
+		},
+		{
+			"name": "Vlayer - Compress Proof",
+			"item": [
+				{
+					"name": "POST - Compress Proof (Custom Extraction)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"presentation\": {\n    \"data\": \"014000000000000000...\",\n    \"version\": \"0.1.0-alpha.12\",\n    \"meta\": {\n      \"notaryUrl\": \"https://test-notary.vlayer.xyz/v0.1.0-alpha.12\"\n    }\n  },\n  \"extraction\": {\n    \"response.body\": {\n      \"jmespath\": [\"user.createTime\", \"user.verified\", \"user.uniqueId\", \"statsV2\"]\n    }\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/vlayer/compress",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"vlayer",
+								"compress"
+							]
+						},
+						"description": "Comprime un Web Proof y genera un ZK proof con extracción personalizada de campos usando JMESPath. Útil para validación on-chain."
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints para comprimir Web Proofs y generar ZK proofs"
+		},
+		{
+			"name": "TikTok - Compress User Profile",
+			"item": [
+				{
+					"name": "POST - Compress User Profile Proof",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"presentation\": {\n    \"data\": \"014000000000000000...\",\n    \"version\": \"0.1.0-alpha.12\",\n    \"meta\": {\n      \"notaryUrl\": \"https://test-notary.vlayer.xyz/v0.1.0-alpha.12\"\n    }\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/tiktok/compress-user-profile",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"tiktok",
+								"compress-user-profile"
+							]
+						},
+						"description": "Comprime un Web Proof de perfil de usuario con la configuración de extracción predefinida. Extrae automáticamente: createTime, verified, uniqueId, y statsV2. Genera un ZK proof listo para validación on-chain."
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints para comprimir proofs de perfil de usuario con configuración predefinida"
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:3000",
+			"type": "string"
+		}
+	]
+}
+
