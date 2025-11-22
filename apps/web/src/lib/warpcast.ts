@@ -6,7 +6,7 @@ import { env } from "@/lib/env";
  * @returns The farcaster manifest for the frame
  */
 export async function getFarcasterManifest() {
-  const frameName = "my-celo-app";
+  const frameName = "zkFluencer";
   const appUrl = env.NEXT_PUBLIC_URL;
   const noindex = appUrl.includes("localhost") || appUrl.includes("ngrok") || appUrl.includes("https://dev.");
 
@@ -52,13 +52,13 @@ export async function getFarcasterManifest() {
       splashBackgroundColor: "#FFFFFF",
       webhookUrl: `${appUrl}/api/webhook`,
       // Metadata https://github.com/farcasterxyz/miniapps/discussions/191
-      subtitle: "A new Celo blockchain project", // 30 characters, no emojis or special characters, short description under app name
-      description: "A new Celo blockchain project", // 170 characters, no emojis or special characters, promotional message displayed on Mini App Page
+      subtitle: "Web3 Creator Verification", // 30 characters, no emojis or special characters, short description under app name
+      description: "Verify TikTok creators with Self.xyz, connect Web3 companies with authentic influencers. Earn USDC rewards on Celo for quality content campaigns.", // 170 characters, no emojis or special characters, promotional message displayed on Mini App Page
       primaryCategory: "social",
-      tags: ["mini-app", "celo"], // up to 5 tags, filtering/search tags
-      tagline: "Built on Celo", // 30 characters, marketing tagline should be punchy and descriptive
-      ogTitle: `${frameName}`, // 30 characters, app name + short tag, Title case, no emojis
-      ogDescription: "A new Celo blockchain project", // 100 characters, summarize core benefits in 1-2 lines
+      tags: ["creators", "verification", "campaigns", "web3", "celo"], // up to 5 tags, filtering/search tags
+      tagline: "Verified creators, real results", // 30 characters, marketing tagline should be punchy and descriptive
+      ogTitle: `${frameName} - Creator Verify`, // 30 characters, app name + short tag, Title case, no emojis
+      ogDescription: "Privacy-first creator verification platform. Connect verified TikTok creators with Web3 campaigns.", // 100 characters, summarize core benefits in 1-2 lines
       screenshotUrls: [
         // 1284 x 2778, visual previews of the app, max 3 screenshots
         `${appUrl}/opengraph-image.png`,
