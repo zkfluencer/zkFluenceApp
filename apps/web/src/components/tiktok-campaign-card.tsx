@@ -160,7 +160,7 @@ export function TikTokCampaignCard({
               <Button
                 size="lg"
                 variant="outline"
-                className="w-full font-bold text-base h-14 bg-white/95 backdrop-blur-sm border-2 border-white text-black hover:bg-white shadow-lg"
+                className="w-full font-bold text-base h-14 bg-white/10 backdrop-blur-sm border-2 border-white/20 text-white hover:bg-white/20 shadow-lg"
               >
                 Apply Now
               </Button>

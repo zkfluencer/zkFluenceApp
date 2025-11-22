@@ -140,10 +140,8 @@ export default function WalletPage() {
 
           {/* Earnings Summary */}
           <EarningsCard
-            balance={walletData.balance}
-            pending={walletData.pending}
-            lifetime={walletData.lifetime}
-            thisMonth={walletData.thisMonth}
+            totalEarnings={walletData.balance}
+            activeCampaigns={4}
           />
 
           {/* Withdrawal Section */}

@@ -31,13 +31,14 @@ export default function CampaignsPage() {
       reward: 50,
       rewardToken: "USDC",
       deadline: "2024-12-30",
-      spotsLeft: 15,
+      spotsTotal: 20,
+      spotsTaken: 5,
       minCVS: 75,
-      category: "wallet",
-      backgroundImage: "/mobile-wallet-app-blockchain.jpg",
-      duration: "30-90s",
+      regions: ["Global"],
+      duration: { min: 30, max: 90 },
+      keywords: ["Mobile", "Wallet", "Easy"],
+      eligibility: "eligible" as const,
       description: "Create engaging content showcasing the new Celo mobile wallet features and ease of use.",
-      tags: ["Mobile", "Wallet", "Easy"],
     },
     {
       id: "2",
@@ -47,13 +48,14 @@ export default function CampaignsPage() {
       reward: 75,
       rewardToken: "USDC",
       deadline: "2024-12-25",
-      spotsLeft: 8,
+      spotsTotal: 15,
+      spotsTaken: 7,
       minCVS: 80,
-      category: "defi",
-      backgroundImage: "/defi-trading-cryptocurrency.jpg",
-      duration: "45-120s",
+      regions: ["Global"],
+      duration: { min: 45, max: 120 },
+      keywords: ["DeFi", "Trading", "Education"],
+      eligibility: (userCVS >= 80 ? "eligible" : "locked") as const,
       description: "Help educate viewers about DeFi concepts using Uniswap as examples.",
-      tags: ["DeFi", "Trading", "Education"],
     },
     {
       id: "3",
@@ -63,14 +65,15 @@ export default function CampaignsPage() {
       reward: 100,
       rewardToken: "USDC",
       deadline: "2024-12-28",
-      spotsLeft: 3,
+      spotsTotal: 10,
+      spotsTaken: 7,
       minCVS: 90,
-      category: "nft",
-      backgroundImage: "/nft-digital-art-marketplace.jpg",
-      duration: "60-180s",
+      regions: ["Global"],
+      duration: { min: 60, max: 180 },
+      keywords: ["NFT", "Art", "Collection"],
+      eligibility: (userCVS >= 90 ? "eligible" : "partial") as const,
       description: "Showcase your NFT collection and experience with OpenSea marketplace.",
-      tags: ["NFT", "Art", "Collection"],
-      premium: true,
+      missingRequirements: userCVS < 90 ? [`CVS Score ${userCVS}/90 - Improve your score to unlock`] : undefined,
     },
     {
       id: "4",
@@ -80,21 +83,21 @@ export default function CampaignsPage() {
       reward: 60,
       rewardToken: "USDC",
       deadline: "2025-01-05",
-      spotsLeft: 28,
+      spotsTotal: 35,
+      spotsTaken: 7,
       minCVS: 70,
-      category: "gaming",
-      backgroundImage: "/gaming-esports-blockchain.jpg",
-      duration: "30-60s",
+      regions: ["Global"],
+      duration: { min: 30, max: 60 },
+      keywords: ["Gaming", "Play2Earn", "Fun"],
+      eligibility: "eligible" as const,
       description: "Promote the new blockchain gaming platform with exciting gameplay footage.",
-      tags: ["Gaming", "Play2Earn", "Fun"],
     },
   ]
 
   // Filter campaigns based on user selections
   const filteredCampaigns = campaigns.filter((campaign) => {
-    const categoryMatch = selectedCategory === "all" || campaign.category === selectedCategory
     const rewardMatch = campaign.reward >= minReward
-    return categoryMatch && rewardMatch
+    return rewardMatch
   })
 
   // Loading state while Farcaster SDK initializes
@@ -129,18 +132,10 @@ export default function CampaignsPage() {
           />
 
           {/* Campaign Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
-            {filteredCampaigns.map((campaign) => {
-              const isEligible = userCVS >= campaign.minCVS
-              return (
-                <CampaignCard
-                  key={campaign.id}
-                  {...campaign}
-                  isEligible={isEligible}
-                  userCVS={userCVS}
-                />
-              )
-            })}
+          <div className="space-y-4 mt-6">
+            {filteredCampaigns.map((campaign) => (
+              <CampaignCard key={campaign.id} {...campaign} />
+            ))}
           </div>
 
           {/* Empty State */}
