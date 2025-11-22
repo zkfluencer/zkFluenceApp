@@ -2,7 +2,6 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 
-import { Navbar } from '@/components/navbar';
 import Providers from "@/components/providers"
 
 const inter = Inter({ subsets: ['latin'] });
@@ -14,23 +13,23 @@ const frame = {
   version: "1",
   imageUrl: `${appUrl}/opengraph-image.png`,
   button: {
-    title: "Launch my-celo-app",
+    title: "Launch zkFluencer",
     action: {
       type: "launch_frame",
-      name: "my-celo-app",
+      name: "zkFluencer",
       url: appUrl,
       splashImageUrl: `${appUrl}/icon.png`,
-      splashBackgroundColor: "#ffffff",
+      splashBackgroundColor: "#0a0a0a",
     },
   },
 };
 
 export const metadata: Metadata = {
-  title: 'my-celo-app',
-  description: 'A new Celo blockchain project',
+  title: 'zkFluencer - Creator Verification Platform',
+  description: 'Verify TikTok creators with Self.xyz, connect Web3 companies with authentic influencers. Earn USDC rewards on Celo.',
   openGraph: {
-    title: 'my-celo-app',
-    description: 'A new Celo blockchain project',
+    title: 'zkFluencer - Creator Verification Platform',
+    description: 'Verify TikTok creators with Self.xyz, connect Web3 companies with authentic influencers. Earn USDC rewards on Celo.',
     images: [`${appUrl}/opengraph-image.png`],
   },
   other: {
@@ -44,15 +43,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" className="dark" suppressHydrationWarning>
       <body className={inter.className}>
-        {/* Navbar is included on all pages */}
         <div className="relative flex min-h-screen flex-col">
           <Providers>
-            <Navbar />
-            <main className="flex-1">
-              {children}
-            </main>
+            {children}
           </Providers>
         </div>
       </body>
