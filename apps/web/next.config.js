@@ -7,8 +7,10 @@ const nextConfig = {
     config.externals.push('pino-pretty', 'lokijs', 'encoding')
     return config
   },
-  turbopack: {
-    root: path.resolve(__dirname, '../../'),
+  experimental: {
+    turbo: {
+      root: path.resolve(__dirname, '../../'),
+    },
   },
 };
 
