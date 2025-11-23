@@ -104,17 +104,23 @@ export default function HomePage() {
             <h1 className="text-lg sm:text-xl font-bold tracking-tight">zkFluencer</h1>
           </div>
           <div className="flex items-center gap-2">
-            <Link href="/creator/feed">
-              <Button variant="ghost" size="sm" className="text-xs sm:text-sm font-medium px-2 sm:px-3">
-                Feed
-              </Button>
-            </Link>
-            <Link href="/creator/dashboard">
+            <Link href="/dashboard">
               <Button variant="ghost" size="sm" className="text-xs sm:text-sm font-medium px-2 sm:px-3">
                 Dashboard
               </Button>
             </Link>
-            <ThemeToggle />
+            <Link href="/profile">
+              <Button variant="ghost" size="sm" className="text-xs sm:text-sm font-medium px-2 sm:px-3">
+                Profile
+              </Button>
+            </Link>
+            <Button
+              variant="outline"
+              size="sm"
+              className="text-xs sm:text-sm font-medium border-primary text-primary hover:bg-primary hover:text-white bg-transparent px-2 sm:px-3 hidden sm:flex"
+            >
+              Connect Wallet
+            </Button>
           </div>
         </div>
       </header>
