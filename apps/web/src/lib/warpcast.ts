@@ -56,7 +56,7 @@ export async function getFarcasterManifest() {
       description: "Verify TikTok creators with Self.xyz, connect Web3 companies with authentic influencers. Earn USDC rewards on Celo for quality content campaigns.", // 170 characters, no emojis or special characters, promotional message displayed on Mini App Page
       primaryCategory: "social",
       tags: ["creators", "verification", "campaigns", "web3", "celo"], // up to 5 tags, filtering/search tags
-      tagline: "Verified creators, real results", // 30 characters, marketing tagline should be punchy and descriptive
+      tagline: "Verified creators", // 30 characters, marketing tagline should be punchy and descriptive
       ogTitle: `${frameName} - Creator Verify`, // 30 characters, app name + short tag, Title case, no emojis
       ogDescription: "Privacy-first creator verification platform. Connect verified TikTok creators with Web3 campaigns.", // 100 characters, summarize core benefits in 1-2 lines
       screenshotUrls: [
