@@ -9,9 +9,10 @@ import Image from "next/image"
 import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
-export default function ReviewSubmissionsPage({ params }: { params: { id: string } }) {
+export default async function ReviewSubmissionsPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
   const campaign = {
-    id: params.id,
+    id,
     title: "Celo Wallet Mobile App Launch",
   }
 
