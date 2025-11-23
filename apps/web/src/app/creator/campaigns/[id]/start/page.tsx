@@ -8,7 +8,6 @@ import { Textarea } from "@/components/ui/textarea"
 import { Checkbox } from "@/components/ui/checkbox"
 import { TikTokConnectButton } from "@/components/tiktok-connect-button"
 import { SelfWidget } from "@/components/SelfWidget"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { useToast } from "@/hooks/use-toast"
 import { ArrowLeft, CheckCircle2, FileText, Shield, Loader2 } from "lucide-react"
 import Link from "next/link"
@@ -133,6 +132,10 @@ export default function StartCampaignPage({ params }: { params: Promise<{ id: st
                     <h3 className="text-lg font-semibold">Campaign Requirements</h3>
                   </div>
                   <div className="space-y-4">
+                    {/* Self Protocol Verification - First Priority */}
+                    <SelfWidget variant="inline" />
+
+                    {/* TikTok Connection - Second Priority */}
                     <div className={`p-4 rounded-lg border ${tiktokConnected ? 'bg-green-50 dark:bg-green-950 border-green-200 dark:border-green-800' : 'bg-amber-50 dark:bg-amber-950 border-amber-200 dark:border-amber-800'}`}>
                       <div className="flex items-start justify-between gap-3">
                         <div className="flex items-start gap-3 flex-1">
@@ -165,39 +168,6 @@ export default function StartCampaignPage({ params }: { params: Promise<{ id: st
                         </div>
                       </div>
                     </div>
-
-                    <Dialog>
-                      <DialogTrigger asChild>
-                        <div className="p-4 rounded-lg border bg-blue-50 dark:bg-blue-950 border-blue-200 dark:border-blue-800 cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-900 transition-colors">
-                          <div className="flex items-start justify-between gap-3">
-                            <div className="flex items-start gap-3 flex-1">
-                              <Shield className="h-5 w-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
-                              <div className="flex-1">
-                                <p className="font-medium text-foreground mb-1">Verify with Self Protocol</p>
-                                <p className="text-sm text-muted-foreground mb-2">
-                                  Privacy-preserving identity verification on Celo blockchain
-                                </p>
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  className="bg-blue-600 hover:bg-blue-700 text-white border-blue-600"
-                                  onClick={(e) => e.stopPropagation()}
-                                >
-                                  <Shield className="mr-2 h-3 w-3" />
-                                  Verify Identity
-                                </Button>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </DialogTrigger>
-                      <DialogContent className="sm:max-w-[600px]">
-                        <DialogHeader>
-                          <DialogTitle>Self Protocol Verification</DialogTitle>
-                        </DialogHeader>
-                        <SelfWidget variant="inline" />
-                      </DialogContent>
-                    </Dialog>
 
                     <div className="p-4 rounded-lg bg-secondary border border-border">
                       <div className="flex items-start gap-3">
