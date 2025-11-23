@@ -225,7 +225,7 @@ export default async function CampaignDetailPage({ params }: { params: Promise<{
                   {campaign.bonusReward && <p className="text-xs text-primary font-medium">{campaign.bonusReward}</p>}
                 </div>
 
-                <Link href={`/creator/campaigns/${params.id}/start`}>
+                <Link href={`/creator/campaigns/${id}/start`}>
                   <Button className="w-full bg-accent hover:bg-accent/90 text-accent-foreground" size="lg">
                     Join Campaign
                   </Button>
