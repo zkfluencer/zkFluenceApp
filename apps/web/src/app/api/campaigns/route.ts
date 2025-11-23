@@ -1,95 +1,56 @@
-// API Route: /api/campaigns
-// Get all campaigns or create a new campaign
+import { NextResponse } from 'next/server'
+import { createClient } from '@/lib/supabase/server'
+import type { Database } from '@/types/database'
 
-import { NextRequest, NextResponse } from "next/server"
-import type { Campaign } from "@/types/campaign"
+type Campaign = Database['public']['Tables']['campaigns']['Insert']
 
-// TODO: Replace with actual database integration
-const mockCampaigns: Campaign[] = [
-  {
-    id: "1",
-    title: "Celo Wallet Mobile App Launch",
-    company: "Celo Foundation",
-    companyLogo: "/placeholder.svg?height=48&width=48&text=CF",
-    description: "Create engaging content showcasing the new Celo mobile wallet features.",
-    reward: 50,
-    rewardToken: "USDC",
-    deadline: "2024-12-30",
-    spotsTotal: 20,
-    spotsFilled: 5,
-    minCVS: 75,
-    category: "wallet",
-    backgroundImage: "/mobile-wallet-app-blockchain.jpg",
-    duration: "30-90s",
-    tags: ["Mobile", "Wallet", "Easy"],
-    status: "active",
-    createdAt: "2024-11-01T00:00:00Z",
-    updatedAt: "2024-11-22T00:00:00Z",
-    contractAddress: "0x1234567890abcdef1234567890abcdef12345678",
-    escrowAmount: 1000,
-  },
-]
-
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
-    const searchParams = request.nextUrl.searchParams
-    const category = searchParams.get("category")
-    const minReward = searchParams.get("minReward")
-    const status = searchParams.get("status")
+    const supabase = await createClient()
 
-    let filteredCampaigns = mockCampaigns
+    const { data, error } = await supabase
+      .from('campaigns')
+      .select(`
+        *,
+        brands (
+          id,
+          name,
+          logo_url
+        )
+      `)
+      .order('created_at', { ascending: false })
 
-    // Apply filters
-    if (category && category !== "all") {
-      filteredCampaigns = filteredCampaigns.filter((c) => c.category === category)
-    }
+    if (error) throw error
 
-    if (minReward) {
-      filteredCampaigns = filteredCampaigns.filter((c) => c.reward >= parseFloat(minReward))
-    }
-
-    if (status) {
-      filteredCampaigns = filteredCampaigns.filter((c) => c.status === status)
-    }
-
-    return NextResponse.json(filteredCampaigns)
+    return NextResponse.json(data)
   } catch (error) {
-    console.error("Error fetching campaigns:", error)
-    return NextResponse.json({ error: "Failed to fetch campaigns" }, { status: 500 })
+    console.error('Error fetching campaigns:', error)
+    return NextResponse.json(
+      { error: 'Failed to fetch campaigns' },
+      { status: 500 }
+    )
   }
 }
 
-export async function POST(request: NextRequest) {
+export async function POST(request: Request) {
   try {
-    const body = await request.json()
+    const supabase = await createClient()
+    const body = await request.json() as Campaign
 
-    // TODO: Validate request body
-    // TODO: Authenticate company user
-    // TODO: Create campaign in database
-    // TODO: Deploy escrow contract
-    // TODO: Fund escrow with USDC
+    const { data, error } = await supabase
+      .from('campaigns')
+      .insert(body)
+      .select()
+      .single()
 
-    const newCampaign: Campaign = {
-      id: Date.now().toString(),
-      ...body,
-      spotsFilled: 0,
-      status: "draft" as const,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    }
+    if (error) throw error
 
-    mockCampaigns.push(newCampaign)
-
-    return NextResponse.json(
-      {
-        campaign: newCampaign,
-        contractAddress: "0xNEWCONTRACTADDRESS",
-        txHash: "0xTRANSACTIONHASH",
-      },
-      { status: 201 }
-    )
+    return NextResponse.json(data, { status: 201 })
   } catch (error) {
-    console.error("Error creating campaign:", error)
-    return NextResponse.json({ error: "Failed to create campaign" }, { status: 500 })
+    console.error('Error creating campaign:', error)
+    return NextResponse.json(
+      { error: 'Failed to create campaign' },
+      { status: 500 }
+    )
   }
 }
