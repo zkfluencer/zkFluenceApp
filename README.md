@@ -930,3 +930,5 @@ This project is licensed under the MIT License.
 ---
 
 **Note**: This is a hackathon project built for ETHGlobal Buenos Aires 2025. For production use, additional security audits and testing are recommended.
+
+
