@@ -804,7 +804,9 @@ pnpm lint             # Lint web app
 
 ## 🔧 Configuration
 
-### Self Protocol Verification Contract
+### Smart Contract Deployments
+
+#### Self Protocol Verification Contract
 
 The platform uses **Self Protocol** for privacy-preserving identity verification on Celo Mainnet.
 
@@ -813,6 +815,16 @@ The platform uses **Self Protocol** for privacy-preserving identity verification
    - **Network**: Celo Mainnet (Chain ID: 42220)
    - **Scope**: `farcaster-miniapp-template`
    - **Hub Address**: `0xe57F4773bd9c9d8b6Cd70431117d353298B9f5BF`
+
+#### TikTok Campaign Verifier Contract
+
+The platform uses **RiscZero** for verifying TikTok campaign content.
+
+1. **Deployed Contract**
+   - **Contract Address**: [`0x22188933120f63ea6ead700ffc967bdb0db88a79`](https://celoscan.io/address/0x22188933120f63ea6ead700ffc967bdb0db88a79)
+   - **Network**: Celo Mainnet (Chain ID: 42220)
+   - **Interface**: Includes `IRiscZeroVerifier` for zero-knowledge proof verification
+   - **Purpose**: Verifies TikTok content submissions using zkSNARKs
 
 2. **Contract Features**
    - **Age Verification**: Verify users are 18+ without revealing exact age
