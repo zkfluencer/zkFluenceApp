@@ -61,7 +61,7 @@ export function SelfProvider({ children }: SelfProviderProps) {
   // Configuration from environment
   const contractAddress = process.env.NEXT_PUBLIC_SELF_ENDPOINT || process.env.NEXT_PUBLIC_VERIFICATION_CONTRACT_ADDRESS
   const contractChain = (process.env.NEXT_PUBLIC_SELF_ENDPOINT_TYPE as any) || 'celo'
-  const scope = process.env.NEXT_PUBLIC_SELF_SCOPE || 'zkfluence-platform'
+  const scope = process.env.NEXT_PUBLIC_SELF_SCOPE || 'farcaster-miniapp-template'
   const appName = process.env.NEXT_PUBLIC_SELF_APP_NAME || 'zkFluence'
 
   // Initialize Self app when address changes
