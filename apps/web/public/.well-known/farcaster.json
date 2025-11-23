@@ -1,17 +1,12 @@
 {
-  "accountAssociation": {
-    "header": "eyJmaWQiOjIxMDY3MSwidHlwZSI6ImF1dGgiLCJrZXkiOiIweDFCMTQ4OTFmNEU2QkQ4NTY1NmZiN0YyN0M0MGZkMWQ2NmRkNzZkMkIifQ",
-    "payload": "eyJkb21haW4iOiJ6ay1mbHVlbmNlLnZlcmNlbC5hcHAifQ",
-    "signature": "n03u6vlmuMbf5tk4istBPlIAMZMlknqB8AZ1U77iMzEWR9EyPAIv5tEcPZ49wwV8wzLJ/SYEgD+nZ3JsneyIpBw="
-  }, 
   "frame": {
     "version": "1",
     "name": "zkFluencer",
-    "iconUrl": "https://codalabs.ngrok.io/icon.png",
-    "splashImageUrl": "https://codalabs.ngrok.io/icon.png",
+    "iconUrl": "https://zk-fluence.vercel.app/icon.png",
+    "splashImageUrl": "https://zk-fluence.vercel.app/icon.png",
     "splashBackgroundColor": "#635949",
-    "homeUrl": "https://codalabs.ngrok.io",
-    "imageUrl": "https://codalabs.ngrok.io/opengraph-image.png",
+    "homeUrl": "https://zk-fluence.vercel.app",
+    "imageUrl": "https://zk-fluence.vercel.app/opengraph-image.png",
     "buttonTitle": "Launch zkFluencer"
   }
 }
