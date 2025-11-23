@@ -1,350 +1,229 @@
-"use client"
-
-import { useMiniApp } from "@/contexts/miniapp-context"
-import { useAccount } from "wagmi"
 import { CompanyHeader } from "@/components/company-header"
-import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
+import { ArrowLeft, Info } from "lucide-react"
+import Link from "next/link"
+import { Separator } from "@/components/ui/separator"
 
 export default function CreateCampaignPage() {
-  const { context, isMiniAppReady } = useMiniApp()
-  const { address, isConnected } = useAccount()
-  const router = useRouter()
-
-  // Extract Farcaster user data
-  const user = context?.user
-  const companyName = user?.displayName || "Web3 Company"
-
-  // Form state
-  const [formData, setFormData] = useState({
-    title: "",
-    description: "",
-    category: "wallet",
-    reward: "",
-    maxCreators: "",
-    minCVS: "70",
-    deadline: "",
-    duration: "30-90s",
-    guidelines: "",
-    tags: "",
-    imageUrl: "",
-  })
-
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [errors, setErrors] = useState<Record<string, string>>({})
-
-  // Category options
-  const categories = [
-    { value: "wallet", label: "Wallet & Payments", icon: "💳" },
-    { value: "defi", label: "DeFi & Trading", icon: "📈" },
-    { value: "nft", label: "NFTs & Digital Art", icon: "🎨" },
-    { value: "gaming", label: "Web3 Gaming", icon: "🎮" },
-    { value: "social", label: "Social & Community", icon: "👥" },
-    { value: "infrastructure", label: "Infrastructure", icon: "🏗️" },
-  ]
-
-  // Duration options
-  const durations = [
-    { value: "15-30s", label: "15-30 seconds" },
-    { value: "30-90s", label: "30-90 seconds" },
-    { value: "45-120s", label: "45-120 seconds" },
-    { value: "60-180s", label: "60-180 seconds" },
-  ]
-
-  // CVS score options
-  const cvsScores = [
-    { value: "60", label: "60+ (Entry Level)" },
-    { value: "70", label: "70+ (Standard)" },
-    { value: "80", label: "80+ (High Quality)" },
-    { value: "90", label: "90+ (Premium)" },
-  ]
-
-  // Handle input change
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
-    // Clear error for this field
-    if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: "" }))
-    }
-  }
-
-  // Validate form
-  const validateForm = () => {
-    const newErrors: Record<string, string> = {}
-
-    if (!formData.title.trim()) newErrors.title = "Title is required"
-    if (!formData.description.trim()) newErrors.description = "Description is required"
-    if (!formData.reward || parseFloat(formData.reward) <= 0) newErrors.reward = "Valid reward amount is required"
-    if (!formData.maxCreators || parseInt(formData.maxCreators) <= 0) newErrors.maxCreators = "Valid max creators is required"
-    if (!formData.deadline) newErrors.deadline = "Deadline is required"
-
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
-  }
-
-  // Handle submit
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-
-    if (!validateForm()) return
-    if (!isConnected) {
-      alert("Please connect your wallet to create a campaign")
-      return
-    }
-
-    setIsSubmitting(true)
-
-    // TODO: Replace with actual smart contract interaction
-    // 1. Approve USDC spending
-    // 2. Create campaign on-chain
-    // 3. Store metadata on backend
-
-    // Mock submission
-    setTimeout(() => {
-      setIsSubmitting(false)
-      router.push("/company/dashboard")
-    }, 2000)
-  }
-
-  // Calculate total budget
-  const totalBudget = formData.reward && formData.maxCreators
-    ? (parseFloat(formData.reward) * parseInt(formData.maxCreators)).toFixed(2)
-    : "0.00"
-
-  // Loading state
-  if (!isMiniAppReady) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-background">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-      </div>
-    )
-  }
-
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      <CompanyHeader companyName={companyName} />
+    <div className="min-h-screen bg-background">
+      <CompanyHeader />
 
-      <main className="flex-1 overflow-y-auto pb-20 md:pb-8">
-        <div className="container mx-auto px-4 py-6 max-w-4xl">
-          {/* Page Header */}
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-foreground mb-2">Create Campaign</h1>
-            <p className="text-muted-foreground">Launch a new creator campaign to promote your Web3 project</p>
-          </div>
+      <main className="container mx-auto px-4 py-8 max-w-4xl">
+        <Link href="/company/dashboard">
+          <Button variant="ghost" className="mb-6">
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Dashboard
+          </Button>
+        </Link>
 
-          {/* Wallet Warning */}
-          {!isConnected && (
-            <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-2xl p-5 mb-6">
-              <div className="flex items-center gap-3">
-                <div className="text-3xl">⚠️</div>
-                <div className="flex-1">
-                  <h3 className="font-bold text-foreground mb-1">Wallet Required</h3>
-                  <p className="text-sm text-muted-foreground">Connect your wallet to fund and create campaigns</p>
+        <div className="mb-8">
+          <h1 className="text-4xl font-bold text-foreground mb-2 text-balance">Create New Campaign</h1>
+          <p className="text-muted-foreground text-lg">Set up your campaign requirements and content guidelines</p>
+        </div>
+
+        <div className="space-y-6">
+          {/* Basic Information */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Basic Information</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="title">Campaign Title</Label>
+                <Input id="title" placeholder="e.g., Celo Wallet Mobile App Launch" />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="description">Campaign Description</Label>
+                <Textarea id="description" placeholder="Describe what you want creators to showcase..." rows={4} />
+                <p className="text-xs text-muted-foreground">This will be visible to creators browsing campaigns</p>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="start-date">Start Date</Label>
+                  <Input id="start-date" type="date" />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="end-date">End Date</Label>
+                  <Input id="end-date" type="date" />
                 </div>
               </div>
-            </div>
-          )}
+            </CardContent>
+          </Card>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Basic Information */}
-            <div className="bg-card rounded-2xl p-6 border border-border">
-              <h2 className="text-xl font-bold text-foreground mb-4">Basic Information</h2>
-
-              {/* Title */}
-              <div className="mb-4">
-                <label htmlFor="title" className="block text-sm font-medium text-foreground mb-2">
-                  Campaign Title *
-                </label>
-                <input
-                  type="text"
-                  id="title"
-                  name="title"
-                  value={formData.title}
-                  onChange={handleChange}
-                  placeholder="e.g., Celo Wallet Mobile App Launch"
-                  className="w-full px-4 py-3 bg-background border border-border rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-                />
-                {errors.title && <p className="text-red-500 text-sm mt-1">{errors.title}</p>}
+          {/* Creator Requirements */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Creator Requirements</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="min-cvs">Minimum CVS Score</Label>
+                <Input id="min-cvs" type="number" min="0" max="100" placeholder="75" />
+                <p className="text-xs text-muted-foreground">Higher scores indicate more reliable creators</p>
               </div>
 
-              {/* Description */}
-              <div className="mb-4">
-                <label htmlFor="description" className="block text-sm font-medium text-foreground mb-2">
-                  Description *
-                </label>
-                <textarea
-                  id="description"
-                  name="description"
-                  value={formData.description}
-                  onChange={handleChange}
+              <div className="space-y-2">
+                <Label htmlFor="regions">Allowed Regions</Label>
+                <Input id="regions" placeholder="United States, Canada, United Kingdom" />
+                <p className="text-xs text-muted-foreground">Separate multiple regions with commas</p>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="max-creators">Maximum Creators</Label>
+                <Input id="max-creators" type="number" placeholder="50" />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Content Guidelines */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Content Guidelines</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="min-duration">Minimum Duration (seconds)</Label>
+                  <Input id="min-duration" type="number" placeholder="30" />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="max-duration">Maximum Duration (seconds)</Label>
+                  <Input id="max-duration" type="number" placeholder="90" />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="keywords">Required Keywords</Label>
+                <Input id="keywords" placeholder="Celo, Mobile Wallet, Web3, Payments" />
+                <p className="text-xs text-muted-foreground">AI will verify these keywords in video transcripts</p>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="mentions">Required Mentions</Label>
+                <Input id="mentions" placeholder="@celoorg, Celo Wallet" />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="guidelines">Content Instructions</Label>
+                <Textarea id="guidelines" placeholder="What should creators include in their videos?" rows={6} />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="prohibitions">Prohibitions</Label>
+                <Textarea
+                  id="prohibitions"
+                  placeholder="What should creators avoid? (e.g., No financial advice, No profit guarantees)"
                   rows={4}
-                  placeholder="Describe what creators should showcase in their content..."
-                  className="w-full px-4 py-3 bg-background border border-border rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
                 />
-                {errors.description && <p className="text-red-500 text-sm mt-1">{errors.description}</p>}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Reward Structure */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Reward Structure</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="reward">Base Reward (USDC)</Label>
+                  <Input id="reward" type="number" placeholder="50" />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="total-budget">Total Budget (USDC)</Label>
+                  <Input id="total-budget" type="number" placeholder="2500" />
+                </div>
               </div>
 
-              {/* Category */}
-              <div>
-                <label htmlFor="category" className="block text-sm font-medium text-foreground mb-2">
-                  Category
-                </label>
-                <select
-                  id="category"
-                  name="category"
-                  value={formData.category}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 bg-background border border-border rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-                >
-                  {categories.map((cat) => (
-                    <option key={cat.value} value={cat.value}>
-                      {cat.icon} {cat.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            {/* Campaign Details */}
-            <div className="bg-card rounded-2xl p-6 border border-border">
-              <h2 className="text-xl font-bold text-foreground mb-4">Campaign Details</h2>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Reward */}
-                <div>
-                  <label htmlFor="reward" className="block text-sm font-medium text-foreground mb-2">
-                    Reward per Creator (USDC) *
-                  </label>
-                  <input
-                    type="number"
-                    id="reward"
-                    name="reward"
-                    value={formData.reward}
-                    onChange={handleChange}
-                    min="0"
-                    step="0.01"
-                    placeholder="50.00"
-                    className="w-full px-4 py-3 bg-background border border-border rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-                  />
-                  {errors.reward && <p className="text-red-500 text-sm mt-1">{errors.reward}</p>}
-                </div>
-
-                {/* Max Creators */}
-                <div>
-                  <label htmlFor="maxCreators" className="block text-sm font-medium text-foreground mb-2">
-                    Max Creators *
-                  </label>
-                  <input
-                    type="number"
-                    id="maxCreators"
-                    name="maxCreators"
-                    value={formData.maxCreators}
-                    onChange={handleChange}
-                    min="1"
-                    placeholder="20"
-                    className="w-full px-4 py-3 bg-background border border-border rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-                  />
-                  {errors.maxCreators && <p className="text-red-500 text-sm mt-1">{errors.maxCreators}</p>}
-                </div>
-
-                {/* Min CVS Score */}
-                <div>
-                  <label htmlFor="minCVS" className="block text-sm font-medium text-foreground mb-2">
-                    Minimum CVS Score
-                  </label>
-                  <select
-                    id="minCVS"
-                    name="minCVS"
-                    value={formData.minCVS}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 bg-background border border-border rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-                  >
-                    {cvsScores.map((score) => (
-                      <option key={score.value} value={score.value}>
-                        {score.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Deadline */}
-                <div>
-                  <label htmlFor="deadline" className="block text-sm font-medium text-foreground mb-2">
-                    Deadline *
-                  </label>
-                  <input
-                    type="date"
-                    id="deadline"
-                    name="deadline"
-                    value={formData.deadline}
-                    onChange={handleChange}
-                    min={new Date().toISOString().split("T")[0]}
-                    className="w-full px-4 py-3 bg-background border border-border rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-                  />
-                  {errors.deadline && <p className="text-red-500 text-sm mt-1">{errors.deadline}</p>}
-                </div>
-
-                {/* Video Duration */}
-                <div>
-                  <label htmlFor="duration" className="block text-sm font-medium text-foreground mb-2">
-                    Video Duration
-                  </label>
-                  <select
-                    id="duration"
-                    name="duration"
-                    value={formData.duration}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 bg-background border border-border rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-                  >
-                    {durations.map((dur) => (
-                      <option key={dur.value} value={dur.value}>
-                        {dur.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-            </div>
-
-            {/* Budget Summary */}
-            <div className="bg-gradient-to-br from-primary/20 to-primary/10 rounded-2xl p-6 border border-primary/20">
-              <h2 className="text-xl font-bold text-foreground mb-4">Budget Summary</h2>
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground mb-1">Total Campaign Budget</p>
-                  <p className="text-3xl font-bold text-primary">${totalBudget} USDC</p>
-                  <p className="text-xs text-muted-foreground mt-2">
-                    {formData.reward && formData.maxCreators ? `${formData.reward} USDC × ${formData.maxCreators} creators` : "Enter reward and max creators"}
-                  </p>
-                </div>
-                {isConnected && (
-                  <div className="text-right">
-                    <p className="text-sm text-muted-foreground mb-1">Your Wallet</p>
-                    <p className="text-lg font-mono text-foreground">{address?.slice(0, 6)}...{address?.slice(-4)}</p>
+              <div className="p-4 rounded-lg bg-accent/10 border border-accent/20">
+                <div className="flex items-start gap-2">
+                  <Info className="h-5 w-5 text-accent flex-shrink-0 mt-0.5" />
+                  <div>
+                    <p className="text-sm font-medium text-accent mb-1">Budget will be escrowed on Celo Network</p>
+                    <p className="text-xs text-muted-foreground">
+                      Funds are held in a smart contract and released automatically upon approval. Unused funds can be
+                      withdrawn after campaign ends.
+                    </p>
                   </div>
-                )}
+                </div>
               </div>
-            </div>
 
-            {/* Submit Buttons */}
-            <div className="flex gap-4">
-              <button
-                type="button"
-                onClick={() => router.back()}
-                className="flex-1 px-6 py-4 bg-card border border-border text-foreground rounded-xl font-bold hover:border-primary/50 transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                disabled={isSubmitting || !isConnected}
-                className="flex-1 px-6 py-4 bg-primary text-primary-foreground rounded-xl font-bold hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isSubmitting ? "Creating Campaign..." : "Create Campaign"}
-              </button>
-            </div>
-          </form>
+              <div className="space-y-2">
+                <Label htmlFor="bonus">Bonus Reward (Optional)</Label>
+                <Input id="bonus" placeholder="e.g., +10 USDC for top 10% engagement" />
+              </div>
+
+              <Separator />
+
+              <div className="space-y-3">
+                <h4 className="text-sm font-medium text-foreground">Additional Incentives</h4>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="cvs-points" className="font-normal">
+                      CVS Points
+                    </Label>
+                    <Input id="cvs-points" type="number" placeholder="50" className="w-24" />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="nft-badge" className="font-normal">
+                      NFT Badge Name
+                    </Label>
+                    <Input id="nft-badge" placeholder="Campaign Contributor" className="w-64" />
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Review & Launch */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Review & Launch</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="p-4 rounded-lg border border-border space-y-2">
+                <h4 className="font-medium text-foreground">Campaign Summary</h4>
+                <div className="grid grid-cols-2 gap-2 text-sm">
+                  <div>
+                    <span className="text-muted-foreground">Total Budget:</span>
+                    <span className="ml-2 font-medium text-foreground">$2,500 USDC</span>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground">Per Creator:</span>
+                    <span className="ml-2 font-medium text-foreground">$50 USDC</span>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground">Max Creators:</span>
+                    <span className="ml-2 font-medium text-foreground">50</span>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground">Estimated Reach:</span>
+                    <span className="ml-2 font-medium text-foreground">500K+ views</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex gap-3">
+                <Button variant="outline" className="flex-1 bg-transparent">
+                  Save as Draft
+                </Button>
+                <Button className="flex-1 bg-accent hover:bg-accent/90 text-accent-foreground">
+                  Fund & Launch Campaign
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </main>
     </div>
