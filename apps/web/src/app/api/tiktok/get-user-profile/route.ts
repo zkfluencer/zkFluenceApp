@@ -2,6 +2,7 @@
 // Obtiene el perfil de usuario de TikTok con proof
 
 import { NextRequest, NextResponse } from 'next/server';
+import { randomUUID } from 'crypto';
 import { createTikTokClient, getTikTokConfig, TIKTOK_ENDPOINTS, callTikTokApiDirectly } from '@/lib/api/tiktok';
 import { validateHandle, cleanHandle } from '@/lib/utils/handle-validation';
 
@@ -74,10 +75,17 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    // Generar objeto hardcodeado con campaign_id y handle_tiktok
+    const campaignId = randomUUID();
+    const responseData = {
+      campaign_id: campaignId,
+      handle_tiktok: cleanHandleValue,
+    };
+
     return NextResponse.json({
       success: true,
       endpoint: result.endpoint,
-      data: result.data, // Solo contiene: createTime, verified, uniqueId, statsV2
+      data: responseData, // Objeto hardcodeado: campaign_id y handle_tiktok
       proof: result.proof,
       verification: result.verification,
     });
@@ -168,10 +176,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Generar objeto hardcodeado con campaign_id y handle_tiktok
+    const campaignId = randomUUID();
+    const responseData = {
+      campaign_id: campaignId,
+      handle_tiktok: cleanHandleValue,
+    };
+
     return NextResponse.json({
       success: true,
       endpoint: result.endpoint,
-      data: result.data, // Solo contiene: createTime, verified, uniqueId, statsV2
+      data: responseData, // Objeto hardcodeado: campaign_id y handle_tiktok
       proof: result.proof,
       verification: result.verification,
     });

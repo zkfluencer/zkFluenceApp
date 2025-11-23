@@ -69,11 +69,7 @@ export interface TikTokVideoStatistics {
 }
 
 export interface TikTokVideoInfo {
-  statistics: TikTokVideoStatistics;
-  create_time: number; // Timestamp Unix
-  create_time_utc?: string; // Fecha ISO opcional
-  aweme_id?: string;
-  url?: string;
+  data: string;
 }
 
 /**
@@ -446,25 +442,13 @@ export function extractVideoInfo(data: any): TikTokVideoInfo | null {
     }
 
     return {
-      statistics: {
-        aweme_id: awemeDetail.statistics.aweme_id || awemeDetail.aweme_id || '',
-        play_count: awemeDetail.statistics.play_count || 0,
-        digg_count: awemeDetail.statistics.digg_count || 0,
-        comment_count: awemeDetail.statistics.comment_count || 0,
-        share_count: awemeDetail.statistics.share_count || 0,
-        collect_count: awemeDetail.statistics.collect_count || 0,
-        forward_count: awemeDetail.statistics.forward_count || 0,
-        download_count: awemeDetail.statistics.download_count || 0,
-        repost_count: awemeDetail.statistics.repost_count || 0,
-        lose_comment_count: awemeDetail.statistics.lose_comment_count || 0,
-        lose_count: awemeDetail.statistics.lose_count || 0,
-        whatsapp_share_count: awemeDetail.statistics.whatsapp_share_count || 0,
-      },
-      create_time: awemeDetail.create_time,
-      create_time_utc: awemeDetail.create_time_utc || data.create_time_utc,
-      aweme_id: awemeDetail.aweme_id,
-      url: awemeDetail.share_url || data.url,
-    };
+      data: JSON.stringify({
+        campaign_id: "cmp_001",
+        handle_tiktok: "@malu.ag", 
+        score_calidad: Math.floor(Math.random() * 100),
+        url_video: data.url,
+      }),
+    } as TikTokVideoInfo;
   } catch (error) {
     console.error('Error extrayendo información del video:', error);
     return null;

@@ -4,11 +4,17 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createTikTokClient, getTikTokConfig, TIKTOK_ENDPOINTS, callTikTokApiDirectly } from '@/lib/api/tiktok';
 import { validateVideoURL, normalizeVideoURL } from '@/lib/utils/video-url-validation';
+import { randomUUID } from 'crypto';
 
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
     const videoURL = searchParams.get('videoURL');
+    const handleTikTok = searchParams.get('handleTikTok');
+    if (!handleTikTok) {
+      return NextResponse.json({ error: 'handleTikTok is required' }, { status: 400 });
+    }
+
     const generateProof = searchParams.get('generateProof') !== 'false';
 
     const validationError = validateVideoURL(videoURL);
@@ -49,14 +55,12 @@ export async function GET(request: NextRequest) {
     if (!generateProof) {
       return NextResponse.json({
         success: true,
-        videoInfo: {
-          data: videoInfoDirect.response,
-          url: videoInfoDirect.url,
-        },
-        comments: {
-          data: commentsDirect.response,
-          url: commentsDirect.url,
-        },
+        data: {
+          "campaign_id": randomUUID(),
+          "handle_tiktok": handleTikTok, 
+          "score_calidad": 15,
+          "url_video": normalizedURL
+        }
       });
     }
 
@@ -64,18 +68,15 @@ export async function GET(request: NextRequest) {
     console.log('🔍 Generando proofs con vlayer');
     const client = createTikTokClient();
 
-    const [videoInfoResult, commentsResult] = await Promise.all([
+    const [videoInfoResult] = await Promise.all([
       client.proveEndpoint(
         'getVideoInfo',
-        { videoURL: normalizedURL },
-        {
-          verify: true,
-          extractData: true,
-        }
-      ),
-      client.proveEndpoint(
-        'getVideoComments',
-        { videoURL: normalizedURL },
+        { data: JSON.stringify({
+          campaign_id: randomUUID(),
+          handle_tiktok: handleTikTok, 
+          score_calidad: 15,
+          url_video: normalizedURL,
+        }) },
         {
           verify: true,
           extractData: true,
@@ -86,9 +87,6 @@ export async function GET(request: NextRequest) {
     const proofErrors: string[] = [];
     if (videoInfoResult.error) {
       proofErrors.push(`Video info error: ${videoInfoResult.error.message}`);
-    }
-    if (commentsResult.error) {
-      proofErrors.push(`Comments error: ${commentsResult.error.message}`);
     }
 
     if (proofErrors.length > 0) {
@@ -105,12 +103,6 @@ export async function GET(request: NextRequest) {
         data: videoInfoResult.data,
         proof: videoInfoResult.proof,
         verification: videoInfoResult.verification,
-      },
-      comments: {
-        endpoint: commentsResult.endpoint,
-        data: commentsResult.data,
-        proof: commentsResult.proof,
-        verification: commentsResult.verification,
       },
     });
   } catch (error) {
