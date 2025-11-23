@@ -85,10 +85,10 @@ export default function StartCampaignPage({ params }: { params: Promise<{ id: st
       <CreatorHeader username="cryptoartist" />
 
       <main className="container mx-auto px-4 py-8 max-w-3xl">
-        <Link href={`/creator/campaigns/${id}`}>
+        <Link href="/">
           <Button variant="ghost" className="mb-6">
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Campaign
+            Back to Campaigns
           </Button>
         </Link>
 
