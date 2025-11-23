@@ -218,27 +218,27 @@ graph TD
 
 ```mermaid
 graph TB
-    subgraph "Smart Contract Layer (Celo)"
+    subgraph "Smart Contract Layer - Celo"
         subgraph "Core Contracts"
-            CM[CampaignManager.sol<br/>Main contract for campaign CRUD]
-            CR[CreatorRegistry.sol<br/>Creator profiles & verification]
-            RD[RewardDistributor.sol<br/>USDC/cUSD distribution]
+            CM["CampaignManager.sol<br/>Main contract for campaign CRUD"]
+            CR["CreatorRegistry.sol<br/>Creator profiles & verification"]
+            RD["RewardDistributor.sol<br/>USDC/cUSD distribution"]
         end
 
         subgraph "Verification Layer"
-            ZKV[ZKVerifier.sol<br/>Verify zero-knowledge proofs]
-            SIG[SignatureVerifier.sol<br/>Verify off-chain signatures]
+            ZKV["ZKVerifier.sol<br/>Verify zero-knowledge proofs"]
+            SIG["SignatureVerifier.sol<br/>Verify off-chain signatures"]
         end
 
         subgraph "Support Contracts"
-            ACC[AccessControl.sol<br/>Role-based permissions]
-            PAUSE[Pausable.sol<br/>Emergency pause mechanism]
-            REENT[ReentrancyGuard.sol<br/>Prevent reentrancy attacks]
+            ACC["AccessControl.sol<br/>Role-based permissions"]
+            PAUSE["Pausable.sol<br/>Emergency pause mechanism"]
+            REENT["ReentrancyGuard.sol<br/>Prevent reentrancy attacks"]
         end
 
         subgraph "External Interfaces"
-            ERC20[IERC20<br/>USDC/cUSD token]
-            ORACLE[IPriceOracle<br/>Price feeds (future)]
+            ERC20["IERC20<br/>USDC/cUSD token"]
+            ORACLE["IPriceOracle<br/>Price feeds future"]
         end
     end
 
