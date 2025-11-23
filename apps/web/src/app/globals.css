@@ -4,83 +4,88 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Updated to warm orange/amber color scheme */
-  --background: #ffffff;
+  --background: #fafaf9;
   --foreground: #1a1a1a;
   --card: #ffffff;
   --card-foreground: #1a1a1a;
+  --card-alt: #f5f5f4;
   --popover: #ffffff;
   --popover-foreground: #1a1a1a;
-  --primary: #f29e5f;
+  --primary: #4e632a;
   --primary-foreground: #ffffff;
-  --secondary: #f5f5f5;
+  --secondary: #e7e5e4;
   --secondary-foreground: #1a1a1a;
-  --muted: #f5f5f5;
-  --muted-foreground: #737373;
-  --accent: #f29e5f;
+  --muted: #f5f5f4;
+  --muted-foreground: #78716c;
+  --accent: #635949;
   --accent-foreground: #ffffff;
-  --destructive: #ef4444;
+  --destructive: #dc2626;
   --destructive-foreground: #ffffff;
-  --border: #e5e5e5;
-  --input: #e5e5e5;
-  --ring: #f29e5f;
-  --chart-1: #f29e5f;
-  --chart-2: #fb923c;
-  --chart-3: #fbbf24;
-  --chart-4: #ef4444;
-  --chart-5: #ec4899;
-  /* Updated success color to Forest Green */
-  --success: #4e632a;
+  --border: #e7e5e4;
+  --input: #e7e5e4;
+  --ring: #4e632a;
+  --chart-1: #4e632a;
+  --chart-2: #5d7533;
+  --chart-3: #6c873c;
+  --chart-4: #7b9945;
+  --chart-5: #8aab4e;
+  --success: #16a34a;
   --success-foreground: #ffffff;
-  /* Added Lime Green for light green accents */
-  --success-light: #b2eba1;
-  --warning: #fbbf24;
-  --warning-foreground: #1a1a1a;
+  --warning: #f59e0b;
+  --warning-foreground: #ffffff;
+  --impact: #1a0329;
+  --impact-foreground: #ffffff;
+  --subhead-bg: #635949;
+  --subhead-fg: #ffffff;
   --radius: 0.75rem;
   --sidebar: #ffffff;
   --sidebar-foreground: #1a1a1a;
-  --sidebar-primary: #f29e5f;
+  --sidebar-primary: #4e632a;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #f5f5f5;
+  --sidebar-accent: #f5f5f4;
   --sidebar-accent-foreground: #1a1a1a;
-  --sidebar-border: #e5e5e5;
-  --sidebar-ring: #f29e5f;
+  --sidebar-border: #e7e5e4;
+  --sidebar-ring: #4e632a;
 }
 
 .dark {
-  /* Dark mode with warm orange accents on dark background */
   --background: #0a0a0a;
-  --foreground: #fafafa;
-  --card: #1a1a1a;
-  --card-foreground: #fafafa;
-  --popover: #1a1a1a;
-  --popover-foreground: #fafafa;
-  --primary: #f29e5f;
+  --foreground: #fafaf9;
+  --card: #1c1c1a;
+  --card-foreground: #fafaf9;
+  --card-alt: #262624;
+  --popover: #1c1c1a;
+  --popover-foreground: #fafaf9;
+  --primary: #6c873c;
   --primary-foreground: #ffffff;
-  --secondary: #262626;
-  --secondary-foreground: #fafafa;
-  --muted: #262626;
-  --muted-foreground: #a3a3a3;
-  --accent: #f29e5f;
+  --secondary: #292926;
+  --secondary-foreground: #fafaf9;
+  --muted: #262624;
+  --muted-foreground: #a8a29e;
+  --accent: #7a6958;
   --accent-foreground: #ffffff;
-  --destructive: #ef4444;
+  --destructive: #dc2626;
   --destructive-foreground: #ffffff;
-  --border: #262626;
-  --input: #262626;
-  --ring: #f29e5f;
-  --chart-1: #f29e5f;
-  --chart-2: #fb923c;
-  --chart-3: #fbbf24;
-  --chart-4: #ef4444;
-  --chart-5: #ec4899;
-  --sidebar: #1a1a1a;
-  --sidebar-foreground: #fafafa;
-  --sidebar-primary: #f29e5f;
+  --border: #292926;
+  --input: #292926;
+  --ring: #6c873c;
+  --chart-1: #6c873c;
+  --chart-2: #7b9945;
+  --chart-3: #8aab4e;
+  --chart-4: #99bd57;
+  --chart-5: #a8cf60;
+  --impact: #2a0541;
+  --impact-foreground: #e0d5f0;
+  --subhead-bg: #7a6958;
+  --subhead-fg: #f5f5f4;
+  --sidebar: #1c1c1a;
+  --sidebar-foreground: #fafaf9;
+  --sidebar-primary: #6c873c;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #262626;
-  --sidebar-accent-foreground: #fafafa;
-  --sidebar-border: #262626;
-  --sidebar-ring: #f29e5f;
+  --sidebar-accent: #262624;
+  --sidebar-accent-foreground: #fafaf9;
+  --sidebar-border: #292926;
+  --sidebar-ring: #6c873c;
 }
 
 @theme inline {
@@ -90,6 +95,7 @@
   --color-foreground: var(--foreground);
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
+  --color-card-alt: var(--card-alt);
   --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);
   --color-primary: var(--primary);
@@ -112,10 +118,12 @@
   --color-chart-5: var(--chart-5);
   --color-success: var(--success);
   --color-success-foreground: var(--success-foreground);
-  /* Added success-light color token */
-  --color-success-light: var(--success-light);
   --color-warning: var(--warning);
   --color-warning-foreground: var(--warning-foreground);
+  --color-impact: var(--impact);
+  --color-impact-foreground: var(--impact-foreground);
+  --color-subhead-bg: var(--subhead-bg);
+  --color-subhead-fg: var(--subhead-fg);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: var(--radius);
   --radius-lg: calc(var(--radius) + 4px);
