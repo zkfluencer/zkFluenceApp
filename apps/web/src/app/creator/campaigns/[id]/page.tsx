@@ -19,10 +19,11 @@ import Link from "next/link"
 import Image from "next/image"
 import { Separator } from "@/components/ui/separator"
 
-export default function CampaignDetailPage({ params }: { params: { id: string } }) {
+export default async function CampaignDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
   // Mock campaign data - would come from API
   const campaign = {
-    id: params.id,
+    id,
     title: "Celo Wallet Mobile App Launch",
     company: "Celo Foundation",
     companyLogo: "/placeholder.svg?height=80&width=80&text=CF",

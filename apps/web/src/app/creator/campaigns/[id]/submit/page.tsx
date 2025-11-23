@@ -8,9 +8,10 @@ import { ArrowLeft, Loader2, CheckCircle2, AlertCircle, Upload } from "lucide-re
 import Link from "next/link"
 import { Separator } from "@/components/ui/separator"
 
-export default function SubmitCampaignPage({ params }: { params: { id: string } }) {
+export default async function SubmitCampaignPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
   const campaign = {
-    id: params.id,
+    id,
     title: "Celo Wallet Mobile App Launch",
     company: "Celo Foundation",
     reward: 50,
@@ -23,7 +24,7 @@ export default function SubmitCampaignPage({ params }: { params: { id: string } 
       <CreatorHeader username="cryptoartist" />
 
       <main className="container mx-auto px-4 py-8 max-w-3xl">
-        <Link href={`/creator/campaigns/${params.id}`}>
+        <Link href={`/creator/campaigns/${id}`}>
           <Button variant="ghost" className="mb-6">
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Campaign

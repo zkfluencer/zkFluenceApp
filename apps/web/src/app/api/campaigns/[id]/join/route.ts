@@ -1,7 +1,8 @@
 import { type NextRequest, NextResponse } from "next/server"
 
-export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
+export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params
     const body = await request.json()
     const { contentPitch, agreedToTerms, agreedToGuidelines } = body
 
@@ -23,7 +24,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
 
     // Simulated database operation
     const campaignParticipation = {
-      campaignId: params.id,
+      campaignId: id,
       userId: "user123", // Replace with actual user ID from session
       contentPitch,
       status: "active",
