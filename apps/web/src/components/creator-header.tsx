@@ -17,7 +17,7 @@ export function CreatorHeader({ username, compact = false }: CreatorHeaderProps)
     return (
       <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-sm">
         <div className="flex items-center justify-between h-14 px-4">
-          <Link href="/creator/feed" className="flex items-center gap-2">
+          <Link href="/" className="flex items-center gap-2">
             <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-sm font-bold text-primary-foreground">
               zk
             </div>
@@ -122,7 +122,7 @@ export function CreatorHeader({ username, compact = false }: CreatorHeaderProps)
       <div className="container mx-auto px-4 py-4 max-w-7xl">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-8">
-            <Link href="/creator/dashboard" className="flex items-center gap-2">
+            <Link href="/" className="flex items-center gap-2">
               <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
                 <span className="text-primary-foreground font-bold text-lg">zk</span>
               </div>
