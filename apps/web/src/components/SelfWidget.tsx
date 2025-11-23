@@ -310,9 +310,16 @@ export function SelfWidget({
             </div>
             <div>
               <h3 className="font-semibold">Self Protocol</h3>
-              <p className="text-xs md:text-sm text-muted-foreground">Privacy-preserving verification</p>
+              <p className="text-xs md:text-sm text-muted-foreground">On-Chain Verification</p>
             </div>
           </div>
+        </div>
+
+        {/* On-Chain Info */}
+        <div className="p-4 border border-blue-200 bg-blue-50 dark:bg-blue-900/20 dark:border-blue-800 rounded-lg mb-4">
+          <p className="text-sm text-muted-foreground">
+            Verification stored on Celo blockchain for decentralized access.
+          </p>
         </div>
 
         {(isProcessing || isVerifying) && (
@@ -365,51 +372,72 @@ export function SelfWidget({
 
         {!showQR && !isProcessing && !isVerifying && (
           <div className="p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg mb-4">
-            <p className="text-sm text-amber-800 dark:text-amber-300">
-              Gas fees required (~0.01 CELO) for on-chain verification storage
-            </p>
+            <div className="flex items-start gap-2">
+              <svg className="h-5 w-5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+              <div className="flex-1">
+                <p className="text-sm font-medium text-amber-800 dark:text-amber-300">
+                  Gas Fees Required
+                </p>
+                <p className="text-xs text-amber-700 dark:text-amber-400 mt-1">
+                  You need CELO tokens in your wallet to pay for gas fees when storing verification on-chain. Estimated cost: ~0.01 CELO
+                </p>
+              </div>
+            </div>
           </div>
         )}
 
-        <div className="flex gap-2">
-          {!showQR && (
+        {!showQR && (
+          <Button
+            onClick={handleVerify}
+            disabled={isProcessing || isVerifying || !universalLink}
+            className="w-full mb-3"
+          >
+            {(isProcessing || isVerifying) ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Waiting for verification...
+              </>
+            ) : (
+              <>
+                <Shield className="mr-2 h-4 w-4" />
+                Verify with Self
+              </>
+            )}
+          </Button>
+        )}
+
+        {universalLink && !isProcessing && !isVerifying && (
+          <div className="flex gap-2 mb-4">
             <Button
-              onClick={handleVerify}
-              disabled={isProcessing || isVerifying || !universalLink}
+              onClick={copyToClipboard}
+              variant="outline"
+              size="sm"
               className="flex-1"
             >
-              {(isProcessing || isVerifying) ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Verifying...
-                </>
-              ) : (
-                <>
-                  <Shield className="mr-2 h-4 w-4" />
-                  Verify with Self
-                </>
-              )}
+              <Copy className="mr-2 h-3 w-3" />
+              {linkCopied ? 'Copied!' : 'Copy Link'}
             </Button>
-          )}
+            <Button
+              onClick={() => setShowQR(!showQR)}
+              variant="outline"
+              size="sm"
+              className="flex-1"
+            >
+              <QrCode className="mr-2 h-3 w-3" />
+              {showQR ? 'Hide QR' : 'Show QR'}
+            </Button>
+          </div>
+        )}
 
-          {universalLink && !isProcessing && !isVerifying && (
-            <>
-              <Button
-                onClick={copyToClipboard}
-                variant="outline"
-                size="sm"
-              >
-                <Copy className="h-4 w-4" />
-              </Button>
-              <Button
-                onClick={() => setShowQR(!showQR)}
-                variant="outline"
-                size="sm"
-              >
-                <QrCode className="h-4 w-4" />
-              </Button>
-            </>
-          )}
+        {/* Contract Info */}
+        <div className="text-xs text-muted-foreground space-y-1 pt-2 border-t">
+          <p><strong>Contract:</strong></p>
+          <p className="font-mono bg-background p-2 rounded border break-all">
+            {contractAddress}
+          </p>
+          <p><strong>Network:</strong> {contractChain === 'celo' ? 'Celo Mainnet' : contractChain}</p>
         </div>
       </div>
     )
