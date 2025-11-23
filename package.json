@@ -20,13 +20,17 @@
   },
   "devDependencies": {
     "@types/node": "^20.8.0",
-    "turbo": "^1.10.16",
     "tsx": "^4.7.0",
+    "turbo": "^1.10.16",
     "typescript": "^5.2.2"
   },
   "packageManager": "pnpm@8.10.0",
   "engines": {
     "node": ">=18.0.0",
     "pnpm": ">=8.0.0"
+  },
+  "dependencies": {
+    "@selfxyz/qrcode": "^1.0.17",
+    "tw-animate-css": "1.3.3"
   }
 }

@@ -6,6 +6,7 @@ import Link from "next/link"
 import { CreatorHeader } from "@/components/creator-header"
 import { BottomNav } from "@/components/bottom-nav"
 import { Button } from "@/components/ui/button"
+import { SelfWidget } from "@/components/SelfWidget"
 import Image from "next/image"
 
 export default function ProfilePage() {
@@ -108,6 +109,9 @@ export default function ProfilePage() {
               </div>
             </div>
           </div>
+
+          {/* Self Protocol Verification */}
+          <SelfWidget variant="inline" />
 
           {/* Creator Stats */}
           <div className="bg-card rounded-2xl p-4 md:p-6 border border-border shadow-sm mb-4">
