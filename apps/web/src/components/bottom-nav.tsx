@@ -21,7 +21,7 @@ export function BottomNav() {
           />
         </svg>
       ),
-      active: pathname === "/creator/feed",
+      active: pathname === "/creator/feed" || pathname === "/",
     },
     {
       href: "/creator/campaigns",
