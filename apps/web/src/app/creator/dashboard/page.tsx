@@ -279,7 +279,7 @@ export default function CreatorDashboard() {
       <BottomNav />
 
       {/* OnboardingWizard modal */}
-      <OnboardingWizard isOpen={showWizard} onClose={() => setShowWizard(false)} />
+      <OnboardingWizard open={showWizard} onClose={() => setShowWizard(false)} />
     </div>
   )
 }
