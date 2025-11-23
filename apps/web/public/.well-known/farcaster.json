@@ -1,18 +1,18 @@
 {
   "accountAssociation": {
-    "header": "eyJmaWQiOjEyMzQ1LCJ0eXBlIjoiY3VzdG9keSIsImtleSI6IjB4NzFDNzY1NkVDN0I5NzdFMUI3QkEzQjYwNTYzRjEwMDE0MjU0MTNGRiJ9",
+    "header": "eyJmaWQiOjg3NjM5MiwidHlwZSI6ImN1c3RvZHkiLCJrZXkiOiIweGQwNTdENjc3RDU3ZDdGN0YzOTQ2RWM0NjJiY2M0Mjc4RDhFMzM5OWIifQ",
     "payload": "eyJkb21haW4iOiJ6ay1mbHVlbmNlLnZlcmNlbC5hcHAifQ",
-    "signature": "MHg4OWI2ZWRlNmM4YTMxOTU4ZGIwNjdhYzIzMmY0MTE1MDBiZGI4ZGVkZTZmY2MwNmQ2ZWZlZjEzYTczOGU3N2U1MTQzZTExMDEzYmQ0ZjVjZmI3YjRmZDQwZjU0MDRmNmE5NWQzYzA1NGI4ZGEyODNkYjNkNTI1YzRmYzFlMjA3MTFj"
+    "signature": "MHhhNjYxNTY3OTE2MzQ5ZjM1MjY2OGI0NTdkYzU5NzQ1YjhmMTNiNGU5YWY5NjYyNjI5ZjRjYzQ5YzNhNDU2ZjNhNGQ2MWY5MWEwNmMwZDk5MjE4MmUxMjYzMjY1MDI1MTNlMjc5MmY1ZDRlZWZmMDQ5NzUxOGU2MDc4MWQ3MWMyNjFi"
   },
   "frame": {
-    "version": "1",
-    "name": "zkFluencer",
+    "version": "next",
+    "name": "zkFluence",
     "iconUrl": "https://zk-fluence.vercel.app/icon.png",
-    "splashImageUrl": "https://zk-fluence.vercel.app/icon.png",
-    "splashBackgroundColor": "#635949",
     "homeUrl": "https://zk-fluence.vercel.app",
-    "imageUrl": "https://zk-fluence.vercel.app/opengraph-image.png",
-    "buttonTitle": "Launch zkFluencer",
+    "imageUrl": "https://zk-fluence.vercel.app/preview.png",
+    "buttonTitle": "Launch zkFluence",
+    "splashImageUrl": "https://zk-fluence.vercel.app/splash.png",
+    "splashBackgroundColor": "#1a1a1a",
     "webhookUrl": "https://zk-fluence.vercel.app/api/webhook"
   }
 }
