@@ -804,6 +804,76 @@ pnpm lint             # Lint web app
 
 ## 🔧 Configuration
 
+### Self Protocol Verification Contract
+
+The platform uses **Self Protocol** for privacy-preserving identity verification on Celo Mainnet.
+
+1. **Deployed Contract**
+   - **Contract Address**: `0x5c36cfc25dce95976ce947daaea260b131776d2c`
+   - **Network**: Celo Mainnet (Chain ID: 42220)
+   - **Scope**: `farcaster-miniapp-template`
+   - **Hub Address**: `0xe57F4773bd9c9d8b6Cd70431117d353298B9f5BF`
+
+2. **Contract Features**
+   - **Age Verification**: Verify users are 18+ without revealing exact age
+   - **Identity Verification**: Store verified name, nationality, date of birth on-chain
+   - **User Type Management**: Distinguish between Creators and Brands
+   - **Platform Statistics**: Track total verifications, creators, and brands
+   - **Privacy-First**: Uses zero-knowledge proofs for verification
+
+3. **Deploy Your Own Contract**
+   ```bash
+   cd contracts
+
+   # Configure environment
+   cp .env.example .env
+   # Add your PRIVATE_KEY and CELOSCAN_API_KEY
+
+   # Deploy to Celo Mainnet
+   ./script/deploy-verification.sh celo
+
+   # Update frontend .env with new contract address
+   NEXT_PUBLIC_SELF_ENDPOINT=0xYourContractAddress
+   NEXT_PUBLIC_VERIFICATION_CONTRACT_ADDRESS=0xYourContractAddress
+   NEXT_PUBLIC_SELF_SCOPE=zkfluence-platform
+   NEXT_PUBLIC_SELF_ENDPOINT_TYPE=celo
+   ```
+
+4. **Contract Architecture**
+
+   **ZkFluenceVerification.sol** extends `SelfVerificationRoot`:
+   - Stores verification data on-chain
+   - Maps wallet addresses to verification status
+   - Tracks date of birth, name, and nationality
+   - Distinguishes between Creators and Brands
+   - Provides age calculation function
+   - Supports verification revocation
+   - Platform statistics tracking
+
+   **Main Functions**:
+   ```solidity
+   // Check if address is verified
+   function isVerified(address userAddress) external view returns (bool)
+
+   // Get verification data
+   function getVerificationData(address userAddress) external view returns (VerificationData memory)
+
+   // Get age from date of birth
+   function getAge(address userAddress) external view returns (uint256)
+
+   // Set user type (Creator or Brand)
+   function setUserType(address userAddress, UserType userType) external
+
+   // Check if verified creator
+   function isVerifiedCreator(address userAddress) external view returns (bool)
+
+   // Check if verified brand
+   function isVerifiedBrand(address userAddress) external view returns (bool)
+
+   // Get platform statistics
+   function getStats() external view returns (uint256 total, uint256 creators, uint256 brands)
+   ```
+
 ### Supabase Database Setup
 
 1. **Create Supabase Project**
