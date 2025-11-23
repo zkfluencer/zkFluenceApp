@@ -1,286 +1,219 @@
-"use client"
-
-import { useMiniApp } from "@/contexts/miniapp-context"
-import { useAccount } from "wagmi"
 import { CompanyHeader } from "@/components/company-header"
-import { useState } from "react"
 
-export default function AnalyticsPage() {
-  const { context, isMiniAppReady } = useMiniApp()
-  const { address } = useAccount()
-
-  // Extract Farcaster user data
-  const user = context?.user
-  const companyName = user?.displayName || "Web3 Company"
-
-  const [selectedPeriod, setSelectedPeriod] = useState("30d")
-
-  // Mock analytics data - TODO: Replace with API call
-  const analytics = {
-    overview: {
-      totalSpent: 8950.0,
-      totalCampaigns: 12,
-      activeCampaigns: 4,
-      completedCampaigns: 8,
-      totalCreators: 47,
-      totalSubmissions: 89,
-      approvedSubmissions: 78,
-      pendingSubmissions: 8,
-      rejectedSubmissions: 3,
-      avgApprovalRate: 92,
-    },
-    campaignPerformance: [
-      {
-        id: "1",
-        name: "Celo Wallet Mobile App Launch",
-        spent: 2500.0,
-        creators: 15,
-        submissions: 22,
-        approved: 18,
-        avgCVS: 84,
-        status: "completed",
-      },
-      {
-        id: "2",
-        name: "DeFi Made Simple Campaign",
-        spent: 1800.0,
-        creators: 12,
-        submissions: 18,
-        approved: 16,
-        avgCVS: 87,
-        status: "completed",
-      },
-      {
-        id: "3",
-        name: "NFT Marketplace Promotion",
-        spent: 3200.0,
-        creators: 18,
-        submissions: 25,
-        approved: 22,
-        avgCVS: 89,
-        status: "completed",
-      },
-      {
-        id: "4",
-        name: "Web3 Gaming Experience",
-        spent: 1450.0,
-        creators: 10,
-        submissions: 14,
-        approved: 12,
-        avgCVS: 81,
-        status: "active",
-      },
-    ],
-    topCreators: [
-      {
-        username: "cryptoartist",
-        submissions: 8,
-        approved: 8,
-        earned: 600.0,
-        avgCVS: 92,
-      },
-      {
-        username: "web3educator",
-        submissions: 6,
-        approved: 6,
-        earned: 450.0,
-        avgCVS: 88,
-      },
-      {
-        username: "defimaster",
-        submissions: 7,
-        approved: 6,
-        earned: 525.0,
-        avgCVS: 90,
-      },
-      {
-        username: "nftcollector",
-        submissions: 5,
-        approved: 5,
-        earned: 375.0,
-        avgCVS: 85,
-      },
-      {
-        username: "gamingchain",
-        submissions: 6,
-        approved: 5,
-        earned: 425.0,
-        avgCVS: 82,
-      },
-    ],
-    categoryBreakdown: [
-      { category: "NFTs", campaigns: 4, spent: 3800.0, creators: 22 },
-      { category: "DeFi", campaigns: 3, spent: 2400.0, creators: 15 },
-      { category: "Wallet", campaigns: 3, spent: 2100.0, creators: 12 },
-      { category: "Gaming", campaigns: 2, spent: 650.0, creators: 8 },
-    ],
-  }
-
-  // Loading state
-  if (!isMiniAppReady) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-background">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-      </div>
-    )
-  }
-
+export default function CompanyAnalyticsPage() {
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      <CompanyHeader companyName={companyName} />
+    <div className="min-h-screen bg-gray-50">
+      <CompanyHeader />
 
-      <main className="flex-1 overflow-y-auto pb-20 md:pb-8">
-        <div className="container mx-auto px-4 py-6 max-w-7xl">
-          {/* Page Header */}
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h1 className="text-3xl font-bold text-foreground mb-2">Analytics</h1>
-              <p className="text-muted-foreground">Track your campaign performance and ROI</p>
-            </div>
-            <select
-              value={selectedPeriod}
-              onChange={(e) => setSelectedPeriod(e.target.value)}
-              className="px-4 py-2 bg-card border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+      <main className="max-w-7xl mx-auto px-4 py-8 pb-24">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-foreground mb-2">Analytics</h1>
+          <p className="text-muted-foreground">Track campaign performance and creator metrics</p>
+        </div>
+
+        {/* Time Period Selector */}
+        <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
+          {["7 Days", "30 Days", "90 Days", "All Time"].map((period) => (
+            <button
+              key={period}
+              className={`px-4 py-2 rounded-lg whitespace-nowrap ${
+                period === "30 Days" ? "bg-primary text-white" : "bg-white text-foreground hover:bg-gray-100"
+              }`}
             >
-              <option value="7d">Last 7 Days</option>
-              <option value="30d">Last 30 Days</option>
-              <option value="90d">Last 90 Days</option>
-              <option value="all">All Time</option>
+              {period}
+            </button>
+          ))}
+        </div>
+
+        {/* Overview Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between mb-4">
+              <div className="text-3xl">📊</div>
+              <div className="text-[#4E632A] text-sm font-medium bg-[#B2EBA1]/20 px-2 py-1 rounded">+12%</div>
+            </div>
+            <div className="text-2xl font-bold text-foreground mb-1">2.4M</div>
+            <div className="text-sm text-muted-foreground">Total Views</div>
+          </div>
+
+          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between mb-4">
+              <div className="text-3xl">❤️</div>
+              <div className="text-[#4E632A] text-sm font-medium bg-[#B2EBA1]/20 px-2 py-1 rounded">+8%</div>
+            </div>
+            <div className="text-2xl font-bold text-foreground mb-1">184K</div>
+            <div className="text-sm text-muted-foreground">Engagement</div>
+          </div>
+
+          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between mb-4">
+              <div className="text-3xl">🎯</div>
+              <div className="text-[#4E632A] text-sm font-medium bg-[#B2EBA1]/20 px-2 py-1 rounded">+15%</div>
+            </div>
+            <div className="text-2xl font-bold text-foreground mb-1">7.6%</div>
+            <div className="text-sm text-muted-foreground">Avg CTR</div>
+          </div>
+
+          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between mb-4">
+              <div className="text-3xl">💰</div>
+              <div className="text-red-600 text-sm font-medium bg-red-50 px-2 py-1 rounded">-3%</div>
+            </div>
+            <div className="text-2xl font-bold text-foreground mb-1">$0.08</div>
+            <div className="text-sm text-muted-foreground">Cost per View</div>
+          </div>
+        </div>
+
+        {/* Campaign Performance Chart */}
+        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200 mb-8">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-lg font-semibold text-foreground">Campaign Performance</h2>
+            <select className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm">
+              <option>Views</option>
+              <option>Engagement</option>
+              <option>Conversions</option>
             </select>
           </div>
 
-          {/* Overview Stats */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-            <div className="bg-gradient-to-br from-primary/20 to-primary/10 rounded-2xl p-5 border border-primary/20">
-              <div className="text-3xl font-bold text-primary mb-1">${analytics.overview.totalSpent}</div>
-              <div className="text-sm text-muted-foreground">Total Spent</div>
-            </div>
+          {/* Simple Bar Chart Visualization */}
+          <div className="space-y-4">
+            {[
+              { name: "Celo Wallet Launch", value: 85, total: 100 },
+              { name: "DeFi Made Simple", value: 72, total: 100 },
+              { name: "NFT Marketplace", value: 91, total: 100 },
+              { name: "Gaming Platform", value: 64, total: 100 },
+            ].map((campaign) => (
+              <div key={campaign.name}>
+                <div className="flex justify-between text-sm mb-2">
+                  <span className="text-foreground font-medium">{campaign.name}</span>
+                  <span className="text-muted-foreground">{campaign.value}%</span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                  <div
+                    className="bg-gradient-to-r from-primary to-[#4E632A] h-full rounded-full transition-all"
+                    style={{ width: `${campaign.value}%` }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
 
-            <div className="bg-gradient-to-br from-[#4E632A]/20 to-[#4E632A]/10 rounded-2xl p-5 border border-[#4E632A]/20">
-              <div className="text-3xl font-bold text-[#4E632A] mb-1">{analytics.overview.totalCampaigns}</div>
-              <div className="text-sm text-muted-foreground">Total Campaigns</div>
-            </div>
-
-            <div className="bg-gradient-to-br from-blue-500/20 to-blue-500/10 rounded-2xl p-5 border border-blue-500/20">
-              <div className="text-3xl font-bold text-blue-500 mb-1">{analytics.overview.totalCreators}</div>
-              <div className="text-sm text-muted-foreground">Total Creators</div>
-            </div>
-
-            <div className="bg-gradient-to-br from-purple-500/20 to-purple-500/10 rounded-2xl p-5 border border-purple-500/20">
-              <div className="text-3xl font-bold text-purple-500 mb-1">{analytics.overview.avgApprovalRate}%</div>
-              <div className="text-sm text-muted-foreground">Approval Rate</div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+          {/* Top Performing Creators */}
+          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+            <h2 className="text-lg font-semibold text-foreground mb-6">Top Performing Creators</h2>
+            <div className="space-y-4">
+              {[
+                { name: "Sarah Chen", handle: "@sarahweb3", views: "450K", engagement: "12.3%", cvs: 92 },
+                { name: "Mike Johnson", handle: "@mikecrypto", views: "385K", engagement: "10.8%", cvs: 88 },
+                { name: "Alex Rivera", handle: "@alexdefi", views: "320K", engagement: "9.5%", cvs: 85 },
+                { name: "Emma Davis", handle: "@emmatech", views: "290K", engagement: "11.2%", cvs: 90 },
+              ].map((creator, index) => (
+                <div
+                  key={creator.handle}
+                  className="flex items-center gap-4 p-4 rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  <div className="text-2xl font-bold text-muted-foreground w-8">#{index + 1}</div>
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-[#4E632A]" />
+                  <div className="flex-1">
+                    <div className="font-semibold text-foreground">{creator.name}</div>
+                    <div className="text-sm text-muted-foreground">{creator.handle}</div>
+                  </div>
+                  <div className="text-right">
+                    <div className="font-semibold text-foreground">{creator.views}</div>
+                    <div className="text-sm text-muted-foreground">{creator.engagement} CTR</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-xs text-muted-foreground mb-1">CVS</div>
+                    <div className="px-3 py-1 rounded-full bg-[#B2EBA1]/20 text-[#4E632A] font-semibold text-sm">
+                      {creator.cvs}
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
 
-          {/* Submission Stats */}
-          <div className="bg-card rounded-2xl p-6 border border-border mb-8">
-            <h2 className="text-xl font-bold text-foreground mb-4">Submission Overview</h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="text-center">
-                <div className="text-2xl font-bold text-foreground mb-1">{analytics.overview.totalSubmissions}</div>
-                <div className="text-xs text-muted-foreground">Total Submissions</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-[#4E632A] mb-1">{analytics.overview.approvedSubmissions}</div>
-                <div className="text-xs text-muted-foreground">Approved</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-yellow-600 mb-1">{analytics.overview.pendingSubmissions}</div>
-                <div className="text-xs text-muted-foreground">Pending</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-red-600 mb-1">{analytics.overview.rejectedSubmissions}</div>
-                <div className="text-xs text-muted-foreground">Rejected</div>
-              </div>
-            </div>
-          </div>
+          {/* Audience Demographics */}
+          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+            <h2 className="text-lg font-semibold text-foreground mb-6">Audience Demographics</h2>
 
-          {/* Campaign Performance */}
-          <div className="bg-card rounded-2xl p-6 border border-border mb-8">
-            <h2 className="text-xl font-bold text-foreground mb-4">Campaign Performance</h2>
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-border">
-                    <th className="text-left py-3 px-2 text-sm font-medium text-muted-foreground">Campaign</th>
-                    <th className="text-right py-3 px-2 text-sm font-medium text-muted-foreground">Spent</th>
-                    <th className="text-right py-3 px-2 text-sm font-medium text-muted-foreground">Creators</th>
-                    <th className="text-right py-3 px-2 text-sm font-medium text-muted-foreground">Submissions</th>
-                    <th className="text-right py-3 px-2 text-sm font-medium text-muted-foreground">Approved</th>
-                    <th className="text-right py-3 px-2 text-sm font-medium text-muted-foreground">Avg CVS</th>
-                    <th className="text-center py-3 px-2 text-sm font-medium text-muted-foreground">Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {analytics.campaignPerformance.map((campaign) => (
-                    <tr key={campaign.id} className="border-b border-border/50 hover:bg-muted/30 transition-colors">
-                      <td className="py-3 px-2 text-sm font-medium text-foreground">{campaign.name}</td>
-                      <td className="py-3 px-2 text-sm text-right text-foreground">${campaign.spent}</td>
-                      <td className="py-3 px-2 text-sm text-right text-foreground">{campaign.creators}</td>
-                      <td className="py-3 px-2 text-sm text-right text-foreground">{campaign.submissions}</td>
-                      <td className="py-3 px-2 text-sm text-right text-[#4E632A]">{campaign.approved}</td>
-                      <td className="py-3 px-2 text-sm text-right text-foreground">{campaign.avgCVS}</td>
-                      <td className="py-3 px-2 text-center">
-                        <span
-                          className={`px-3 py-1 rounded-full text-xs font-medium ${
-                            campaign.status === "active"
-                              ? "bg-primary/10 text-primary"
-                              : "bg-[#B2EBA1]/10 text-[#4E632A]"
-                          }`}
-                        >
-                          {campaign.status}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Top Creators */}
-            <div className="bg-card rounded-2xl p-6 border border-border">
-              <h2 className="text-xl font-bold text-foreground mb-4">Top Performing Creators</h2>
+            {/* Age Distribution */}
+            <div className="mb-6">
+              <h3 className="text-sm font-medium text-foreground mb-3">Age Groups</h3>
               <div className="space-y-3">
-                {analytics.topCreators.map((creator, index) => (
-                  <div key={creator.username} className="flex items-center gap-3 p-3 bg-muted/30 rounded-xl">
-                    <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-sm">
-                      {index + 1}
+                {[
+                  { range: "18-24", percentage: 35 },
+                  { range: "25-34", percentage: 42 },
+                  { range: "35-44", percentage: 18 },
+                  { range: "45+", percentage: 5 },
+                ].map((age) => (
+                  <div key={age.range} className="flex items-center gap-3">
+                    <div className="w-16 text-sm text-muted-foreground">{age.range}</div>
+                    <div className="flex-1 bg-gray-200 rounded-full h-2 overflow-hidden">
+                      <div className="bg-primary h-full rounded-full" style={{ width: `${age.percentage}%` }} />
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="font-medium text-foreground">@{creator.username}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {creator.approved}/{creator.submissions} approved • CVS {creator.avgCVS}
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-bold text-primary">${creator.earned}</p>
-                    </div>
+                    <div className="w-12 text-sm text-right font-medium text-foreground">{age.percentage}%</div>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* Category Breakdown */}
-            <div className="bg-card rounded-2xl p-6 border border-border">
-              <h2 className="text-xl font-bold text-foreground mb-4">Category Breakdown</h2>
-              <div className="space-y-3">
-                {analytics.categoryBreakdown.map((cat) => (
-                  <div key={cat.category} className="p-3 bg-muted/30 rounded-xl">
-                    <div className="flex items-center justify-between mb-2">
-                      <p className="font-medium text-foreground">{cat.category}</p>
-                      <p className="font-bold text-primary">${cat.spent}</p>
-                    </div>
-                    <div className="flex gap-4 text-xs text-muted-foreground">
-                      <span>{cat.campaigns} campaigns</span>
-                      <span>{cat.creators} creators</span>
-                    </div>
+            {/* Geographic Distribution */}
+            <div>
+              <h3 className="text-sm font-medium text-foreground mb-3">Top Locations</h3>
+              <div className="space-y-2">
+                {[
+                  { country: "🇺🇸 United States", percentage: 38 },
+                  { country: "🇬🇧 United Kingdom", percentage: 22 },
+                  { country: "🇨🇦 Canada", percentage: 15 },
+                  { country: "🇦🇺 Australia", percentage: 12 },
+                  { country: "🌍 Other", percentage: 13 },
+                ].map((location) => (
+                  <div key={location.country} className="flex justify-between items-center">
+                    <span className="text-sm text-foreground">{location.country}</span>
+                    <span className="text-sm font-medium text-foreground">{location.percentage}%</span>
                   </div>
                 ))}
               </div>
             </div>
           </div>
+        </div>
+
+        {/* ROI Analysis */}
+        <div className="bg-gradient-to-br from-primary to-[#4E632A] rounded-xl p-6 shadow-sm text-white mb-8">
+          <h2 className="text-lg font-semibold mb-6">ROI Analysis</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div>
+              <div className="text-sm opacity-90 mb-2">Total Spend</div>
+              <div className="text-3xl font-bold mb-1">$12,450</div>
+              <div className="text-sm opacity-75">USDC on Celo Network</div>
+            </div>
+            <div>
+              <div className="text-sm opacity-90 mb-2">Estimated Value</div>
+              <div className="text-3xl font-bold mb-1">$48,200</div>
+              <div className="text-sm opacity-75">Based on engagement metrics</div>
+            </div>
+            <div>
+              <div className="text-sm opacity-90 mb-2">Return on Investment</div>
+              <div className="text-3xl font-bold mb-1">287%</div>
+              <div className="text-sm opacity-75">Above industry average</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Export Options */}
+        <div className="flex gap-4">
+          <button className="px-6 py-3 bg-white border border-gray-300 rounded-lg text-foreground font-medium hover:bg-gray-50 transition-colors">
+            📥 Export CSV
+          </button>
+          <button className="px-6 py-3 bg-white border border-gray-300 rounded-lg text-foreground font-medium hover:bg-gray-50 transition-colors">
+            📊 Download Report
+          </button>
+          <button className="px-6 py-3 bg-white border border-gray-300 rounded-lg text-foreground font-medium hover:bg-gray-50 transition-colors">
+            📧 Email Summary
+          </button>
         </div>
       </main>
     </div>
