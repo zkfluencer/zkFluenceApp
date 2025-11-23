@@ -8,6 +8,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useRef,
   useState,
   type ReactNode,
 } from "react";
@@ -15,6 +16,7 @@ import FrameWalletProvider from "./frame-wallet-context";
 
 interface MiniAppContextType {
   isMiniAppReady: boolean;
+  isSDKLoaded: boolean;
   context: FrameContext | null;
   setMiniAppReady: () => void;
   addMiniApp: () => Promise<AddFrameResult | null>;
@@ -29,29 +31,54 @@ interface MiniAppProviderProps {
 
 export function MiniAppProvider({ children, addMiniAppOnLoad }: MiniAppProviderProps): JSX.Element {
   const [context, setContext] = useState<FrameContext | null>(null);
+  const [isSDKLoaded, setIsSDKLoaded] = useState(false);
   const [isMiniAppReady, setIsMiniAppReady] = useState(false);
+  const readyCalledRef = useRef(false);
 
-  const setMiniAppReady = useCallback(async () => {
-    try {
-      const context = await sdk.context;
-      if (context) {
-        setContext(context);
+  // Load SDK context first
+  useEffect(() => {
+    const loadSDK = async () => {
+      try {
+        const ctx = await sdk.context;
+        console.log("[MiniApp] SDK context loaded:", ctx);
+        if (ctx) {
+          setContext(ctx);
+        }
+        setIsSDKLoaded(true);
+      } catch (err) {
+        console.error("[MiniApp] SDK load error:", err);
+        setIsSDKLoaded(true); // Set true even on error to prevent blocking
       }
-      await sdk.actions.ready();
-    } catch (err) {
-      console.error("SDK initialization error:", err);
-    } finally {
-      setIsMiniAppReady(true);
-    }
+    };
+
+    loadSDK();
   }, []);
 
-  useEffect(() => {
-    if (!isMiniAppReady) {
-      setMiniAppReady().then(() => {
-        console.log("MiniApp loaded");
-      });
+  // Call ready() when app is ready to be shown - with race condition protection
+  const setMiniAppReady = useCallback(async () => {
+    // Prevent multiple calls
+    if (readyCalledRef.current) {
+      console.log("[MiniApp] ready() already called, skipping");
+      return;
     }
-  }, [isMiniAppReady, setMiniAppReady]);
+
+    if (!isSDKLoaded) {
+      console.warn("[MiniApp] Attempting to call ready() before SDK is loaded");
+      return;
+    }
+
+    readyCalledRef.current = true;
+    console.log("[MiniApp] Calling sdk.actions.ready()...");
+
+    try {
+      await sdk.actions.ready();
+      console.log("[MiniApp] ✅ sdk.actions.ready() completed - splash should hide now");
+      setIsMiniAppReady(true);
+    } catch (err) {
+      console.error("[MiniApp] ❌ Error calling ready():", err);
+      setIsMiniAppReady(true); // Set true even on error to show content
+    }
+  }, [isSDKLoaded]);
 
   const handleAddMiniApp = useCallback(async () => {
     try {
@@ -93,6 +120,7 @@ export function MiniAppProvider({ children, addMiniAppOnLoad }: MiniAppProviderP
     <MiniAppContext.Provider
       value={{
         isMiniAppReady,
+        isSDKLoaded,
         setMiniAppReady,
         addMiniApp: handleAddMiniApp,
         context,

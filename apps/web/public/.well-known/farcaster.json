@@ -1,0 +1,18 @@
+{
+  "accountAssociation": {
+    "header": "eyJmaWQiOjEyMzQ1LCJ0eXBlIjoiY3VzdG9keSIsImtleSI6IjB4MDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMCJ9",
+    "payload": "eyJkb21haW4iOiJjb2RhbGFicy5uZ3Jvay5pbyJ9",
+    "signature": "MHg..."
+  },
+  "frame": {
+    "version": "1",
+    "name": "zkFluencer",
+    "iconUrl": "https://codalabs.ngrok.io/icon.png",
+    "splashImageUrl": "https://codalabs.ngrok.io/icon.png",
+    "splashBackgroundColor": "#0a0a0a",
+    "homeUrl": "https://codalabs.ngrok.io",
+    "imageUrl": "https://codalabs.ngrok.io/opengraph-image.png",
+    "buttonTitle": "Launch zkFluencer",
+    "webhookUrl": "https://codalabs.ngrok.io/api/webhook"
+  }
+}
