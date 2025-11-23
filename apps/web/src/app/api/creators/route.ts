@@ -1,64 +1,49 @@
-// API Route: /api/creators
-// Browse and filter creators
+import { NextResponse } from 'next/server'
+import { createClient } from '@/lib/supabase/server'
+import type { Database } from '@/types/database'
 
-import { NextRequest, NextResponse } from "next/server"
-import type { Creator } from "@/types/creator"
+type Creator = Database['public']['Tables']['creators']['Insert']
 
-// TODO: Replace with actual database integration
-const mockCreators: Creator[] = [
-  {
-    id: "1",
-    fid: "12345",
-    username: "cryptoartist",
-    displayName: "Crypto Artist",
-    pfpUrl: "/creator-avatar.png",
-    bio: "TikTok creator sharing Web3 knowledge",
-    isVerified: true,
-    verifications: ["0x7a8f9d2c"],
-    walletAddress: "0x7a8f9d2c1234567890abcdef1234567890abcdef",
-    selfVerified: true,
-    region: "United States",
-    tiktokConnected: true,
-    tiktokUsername: "cryptoartist_tk",
-    tiktokFollowers: 125000,
-    cvsScore: 92,
-    totalEarnings: 3250.0,
-    totalSubmissions: 45,
-    approvedSubmissions: 43,
-    rejectedSubmissions: 2,
-    activeCampaigns: 3,
-    joinedDate: "2024-01-15T00:00:00Z",
-    lastActive: "2024-11-22T00:00:00Z",
-  },
-]
-
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
-    const searchParams = request.nextUrl.searchParams
-    const minCVS = searchParams.get("minCVS")
-    const sortBy = searchParams.get("sortBy") || "cvs"
+    const supabase = await createClient()
 
-    let filteredCreators = mockCreators
+    const { data, error } = await supabase
+      .from('creators')
+      .select('*')
+      .order('created_at', { ascending: false })
 
-    // Apply CVS filter
-    if (minCVS) {
-      filteredCreators = filteredCreators.filter((c) => c.cvsScore >= parseFloat(minCVS))
-    }
+    if (error) throw error
 
-    // Apply sorting
-    filteredCreators = filteredCreators.sort((a, b) => {
-      if (sortBy === "cvs") return b.cvsScore - a.cvsScore
-      if (sortBy === "earned") return b.totalEarnings - a.totalEarnings
-      if (sortBy === "rate")
-        return (
-          b.approvedSubmissions / b.totalSubmissions - a.approvedSubmissions / a.totalSubmissions
-        )
-      return 0
-    })
-
-    return NextResponse.json(filteredCreators)
+    return NextResponse.json(data)
   } catch (error) {
-    console.error("Error fetching creators:", error)
-    return NextResponse.json({ error: "Failed to fetch creators" }, { status: 500 })
+    console.error('Error fetching creators:', error)
+    return NextResponse.json(
+      { error: 'Failed to fetch creators' },
+      { status: 500 }
+    )
+  }
+}
+
+export async function POST(request: Request) {
+  try {
+    const supabase = await createClient()
+    const body = await request.json() as Creator
+
+    const { data, error } = await supabase
+      .from('creators')
+      .insert(body)
+      .select()
+      .single()
+
+    if (error) throw error
+
+    return NextResponse.json(data, { status: 201 })
+  } catch (error) {
+    console.error('Error creating creator:', error)
+    return NextResponse.json(
+      { error: 'Failed to create creator' },
+      { status: 500 }
+    )
   }
 }

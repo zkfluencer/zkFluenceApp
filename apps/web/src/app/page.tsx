@@ -207,7 +207,7 @@ export default function HomePage() {
                   </div>
                   <Link href={`/creator/campaigns/${campaign.id}/start`} className="w-full sm:w-auto">
                     <Button className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-white px-6">
-                      Start Campaign
+                      Participate
                     </Button>
                   </Link>
                 </div>

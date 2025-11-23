@@ -769,6 +769,7 @@ sequenceDiagram
 ### Infrastructure
 - **Monorepo**: Turborepo
 - **Package Manager**: PNPM
+- **Database**: Supabase (PostgreSQL)
 - **Deployment**: Vercel
 - **Analytics**: Vercel Analytics
 
@@ -802,6 +803,46 @@ pnpm lint             # Lint web app
 ```
 
 ## 🔧 Configuration
+
+### Supabase Database Setup
+
+1. **Create Supabase Project**
+   ```bash
+   # Visit https://app.supabase.com
+   # Create a new project
+   # Copy the project URL and anon key
+   ```
+
+2. **Configure Environment Variables**
+   ```bash
+   # Copy the template
+   cp apps/web/.env.template apps/web/.env.local
+
+   # Add your Supabase credentials
+   NEXT_PUBLIC_SUPABASE_URL=your-project-url
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+   SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+   ```
+
+3. **Run Database Migrations**
+   ```bash
+   # Using Supabase CLI
+   supabase db push
+
+   # Or manually run the migration file
+   # Navigate to apps/web/supabase/migrations/001_initial_schema.sql
+   # Execute in Supabase SQL Editor
+   ```
+
+4. **Database Schema**
+
+   The platform uses the following tables:
+   - **creators**: Creator profiles with Farcaster and TikTok data
+   - **brands**: Brand company profiles
+   - **campaigns**: Marketing campaigns with requirements and rewards
+   - **campaign_participants**: Junction table for campaign participation
+   - **content_submissions**: Content submissions with approval status
+   - **transactions**: On-chain transaction records
 
 ### Farcaster Mini App Manifest
 
