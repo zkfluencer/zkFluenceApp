@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Checkbox } from "@/components/ui/checkbox"
+import { TikTokConnectButton } from "@/components/tiktok-connect-button"
 import { useToast } from "@/hooks/use-toast"
 import { ArrowLeft, CheckCircle2, FileText, Shield, Loader2 } from "lucide-react"
 import Link from "next/link"
@@ -19,6 +20,8 @@ export default function StartCampaignPage({ params }: { params: Promise<{ id: st
   const [agreedToGuidelines, setAgreedToGuidelines] = useState(false)
   const [contentPitch, setContentPitch] = useState("")
   const [isJoining, setIsJoining] = useState(false)
+  const [tiktokConnected, setTiktokConnected] = useState(false)
+  const [tiktokUsername, setTiktokUsername] = useState<string>()
 
   const { toast } = useToast()
   const router = useRouter()
@@ -128,12 +131,35 @@ export default function StartCampaignPage({ params }: { params: Promise<{ id: st
                     <h3 className="text-lg font-semibold">Campaign Requirements</h3>
                   </div>
                   <div className="space-y-4">
-                    <div className="p-4 rounded-lg bg-secondary border border-border">
-                      <div className="flex items-start gap-3">
-                        <CheckCircle2 className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
-                        <div>
-                          <p className="font-medium text-foreground mb-1">TikTok Account Connected</p>
-                          <p className="text-sm text-muted-foreground">Your verified TikTok account is linked</p>
+                    <div className={`p-4 rounded-lg border ${tiktokConnected ? 'bg-green-50 dark:bg-green-950 border-green-200 dark:border-green-800' : 'bg-amber-50 dark:bg-amber-950 border-amber-200 dark:border-amber-800'}`}>
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex items-start gap-3 flex-1">
+                          {tiktokConnected ? (
+                            <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
+                          ) : (
+                            <div className="h-5 w-5 rounded-full border-2 border-amber-500 flex-shrink-0 mt-0.5" />
+                          )}
+                          <div className="flex-1">
+                            <p className="font-medium text-foreground mb-1">
+                              {tiktokConnected ? `TikTok Connected: @${tiktokUsername}` : 'Connect TikTok Account'}
+                            </p>
+                            <p className="text-sm text-muted-foreground mb-3">
+                              {tiktokConnected
+                                ? 'Your TikTok account is verified and linked'
+                                : 'Required to participate in campaigns'}
+                            </p>
+                            {!tiktokConnected && (
+                              <TikTokConnectButton
+                                returnUrl={`/creator/campaigns/${id}/start`}
+                                onSuccess={(username) => {
+                                  setTiktokConnected(true)
+                                  setTiktokUsername(username)
+                                }}
+                                size="sm"
+                                className="bg-[#000000] hover:bg-[#000000]/90 text-white"
+                              />
+                            )}
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -203,12 +229,17 @@ export default function StartCampaignPage({ params }: { params: Promise<{ id: st
 
                 <Button
                   onClick={handleNext}
-                  disabled={!agreedToTerms || !agreedToGuidelines}
+                  disabled={!agreedToTerms || !agreedToGuidelines || !tiktokConnected}
                   className="w-full bg-primary hover:bg-primary/90"
                   size="lg"
                 >
                   Continue to Content Pitch
                 </Button>
+                {!tiktokConnected && (
+                  <p className="text-sm text-amber-600 dark:text-amber-400 text-center">
+                    Please connect your TikTok account to continue
+                  </p>
+                )}
               </div>
             )}
 
