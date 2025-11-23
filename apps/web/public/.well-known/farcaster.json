@@ -1,4 +1,9 @@
 {
+  "accountAssociation": {
+    "header": "eyJmaWQiOjEyMzQ1LCJ0eXBlIjoiY3VzdG9keSIsImtleSI6IjB4NzFDNzY1NkVDN0I5NzdFMUI3QkEzQjYwNTYzRjEwMDE0MjU0MTNGRiJ9",
+    "payload": "eyJkb21haW4iOiJ6ay1mbHVlbmNlLnZlcmNlbC5hcHAifQ",
+    "signature": "MHg4OWI2ZWRlNmM4YTMxOTU4ZGIwNjdhYzIzMmY0MTE1MDBiZGI4ZGVkZTZmY2MwNmQ2ZWZlZjEzYTczOGU3N2U1MTQzZTExMDEzYmQ0ZjVjZmI3YjRmZDQwZjU0MDRmNmE5NWQzYzA1NGI4ZGEyODNkYjNkNTI1YzRmYzFlMjA3MTFj"
+  },
   "frame": {
     "version": "1",
     "name": "zkFluencer",
@@ -7,6 +12,7 @@
     "splashBackgroundColor": "#635949",
     "homeUrl": "https://zk-fluence.vercel.app",
     "imageUrl": "https://zk-fluence.vercel.app/opengraph-image.png",
-    "buttonTitle": "Launch zkFluencer"
+    "buttonTitle": "Launch zkFluencer",
+    "webhookUrl": "https://zk-fluence.vercel.app/api/webhook"
   }
 }
