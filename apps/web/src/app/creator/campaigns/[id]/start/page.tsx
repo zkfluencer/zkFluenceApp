@@ -9,10 +9,11 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { useToast } from "@/hooks/use-toast"
 import { ArrowLeft, CheckCircle2, FileText, Shield, Loader2 } from "lucide-react"
 import Link from "next/link"
-import { useState } from "react"
+import { useState, use } from "react"
 import { useRouter } from "next/navigation"
 
-export default function StartCampaignPage({ params }: { params: { id: string } }) {
+export default function StartCampaignPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params)
   const [step, setStep] = useState(1)
   const [agreedToTerms, setAgreedToTerms] = useState(false)
   const [agreedToGuidelines, setAgreedToGuidelines] = useState(false)
@@ -23,7 +24,7 @@ export default function StartCampaignPage({ params }: { params: { id: string } }
   const router = useRouter()
 
   const campaign = {
-    id: params.id,
+    id,
     title: "Celo Wallet Mobile App Launch",
     company: "Celo Foundation",
     reward: 50,
@@ -42,7 +43,7 @@ export default function StartCampaignPage({ params }: { params: { id: string } }
     setIsJoining(true)
 
     try {
-      const response = await fetch(`/api/campaigns/${params.id}/join`, {
+      const response = await fetch(`/api/campaigns/${id}/join`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -66,7 +67,7 @@ export default function StartCampaignPage({ params }: { params: { id: string } }
       })
 
       setTimeout(() => {
-        router.push(`/creator/campaigns/${params.id}`)
+        router.push(`/creator/campaigns/${id}`)
       }, 1000)
     } catch (error) {
       console.error("[v0] Error joining campaign:", error)
@@ -84,7 +85,7 @@ export default function StartCampaignPage({ params }: { params: { id: string } }
       <CreatorHeader username="cryptoartist" />
 
       <main className="container mx-auto px-4 py-8 max-w-3xl">
-        <Link href={`/creator/campaigns/${params.id}`}>
+        <Link href={`/creator/campaigns/${id}`}>
           <Button variant="ghost" className="mb-6">
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Campaign
