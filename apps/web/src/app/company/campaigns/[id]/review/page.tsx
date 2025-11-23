@@ -104,7 +104,7 @@ export default async function ReviewSubmissionsPage({ params }: { params: Promis
       <CompanyHeader />
 
       <main className="container mx-auto px-4 py-8 max-w-7xl">
-        <Link href={`/company/campaigns/${params.id}`}>
+        <Link href={`/company/campaigns/${id}`}>
           <Button variant="ghost" className="mb-6">
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Campaign
