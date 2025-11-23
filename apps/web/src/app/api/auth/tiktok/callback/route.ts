@@ -10,11 +10,24 @@ export async function GET(request: Request) {
     const error = searchParams.get('error')
     const errorDescription = searchParams.get('error_description')
 
+    // Decode state parameter to get return URL and FID
+    let returnUrl = '/creator/profile'
+    let fid = null
+    if (state) {
+      try {
+        const stateData = JSON.parse(Buffer.from(state, 'base64url').toString())
+        returnUrl = stateData.return_url || returnUrl
+        fid = stateData.fid || null
+      } catch (e) {
+        console.error('Failed to decode state parameter:', e)
+      }
+    }
+
     // Handle OAuth errors
     if (error) {
       console.error('TikTok OAuth error:', error, errorDescription)
       return NextResponse.redirect(
-        new URL(`/creator/profile?tiktok_error=${encodeURIComponent(errorDescription || error)}`, request.url)
+        new URL(`${returnUrl}?tiktok_error=${encodeURIComponent(errorDescription || error)}`, request.url)
       )
     }
 
@@ -26,7 +39,7 @@ export async function GET(request: Request) {
       )
     }
 
-    // Build redirect URI (must match the one used in authorization request)
+    // Build redirect URI (must match the one used in authorization request - NO query params)
     const redirectUri = `${process.env.NEXT_PUBLIC_URL}/api/auth/tiktok/callback`
 
     // Exchange code for access token
@@ -45,9 +58,8 @@ export async function GET(request: Request) {
     // Get Supabase client
     const supabase = await createClient()
 
-    // TODO: Get current user's Farcaster FID from session/context
-    // For now, we'll use a placeholder - you'll need to implement session management
-    const farcasterFid = searchParams.get('fid') || 'temp_fid'
+    // Get Farcaster FID from state parameter
+    const farcasterFid = fid || 'temp_fid'
 
     // Check if creator exists
     const { data: existingCreator } = await supabase
@@ -90,11 +102,7 @@ export async function GET(request: Request) {
       }
     }
 
-    // Store TikTok data in session/cookie for immediate use
-    // (You may want to implement proper session management here)
-
-    // Redirect back to profile or campaign page with success message
-    const returnUrl = searchParams.get('return_url') || '/creator/profile'
+    // Redirect back to the return URL with success message
     return NextResponse.redirect(
       new URL(`${returnUrl}?tiktok_connected=true&username=${encodeURIComponent(userInfo.username)}`, request.url)
     )
