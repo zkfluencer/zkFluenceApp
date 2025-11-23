@@ -7,13 +7,57 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Zap, Users, TrendingUp } from "lucide-react"
 import Link from "next/link"
 import { ThemeToggle } from "@/components/theme-toggle"
+import { useMiniApp } from "@/contexts/miniapp-context"
+import { useAccount } from "wagmi"
+import { useEffect } from "react"
 
 export default function HomePage() {
+  const { context, isMiniAppReady, isSDKLoaded, setMiniAppReady } = useMiniApp()
+  const { address, isConnected } = useAccount()
+
+  // Extract user data from Farcaster context
+  const farcasterUser = context?.user
+  const walletAddress = address || farcasterUser?.custody || farcasterUser?.verifications?.[0] || "0x742d...4a8C"
+  const displayName = farcasterUser?.displayName || farcasterUser?.username || "Creator"
+  const username = farcasterUser?.username || "@creator_eth"
+  const pfpUrl = farcasterUser?.pfpUrl
+
+  // Format wallet address
+  const formatAddress = (addr: string) => {
+    if (!addr || addr.length < 10) return addr
+    return `${addr.slice(0, 6)}...${addr.slice(-4)}`
+  }
+
   const user = {
-    avatar: "/diverse-user-avatars.png",
-    farcasterId: "@creator_eth",
-    walletAddress: "0x742d...4a8C",
-    fullWalletAddress: "0x742d35Cc6634C0532925a3b844Bc9e7595f4a8C",
+    avatar: pfpUrl || "/placeholder-user.jpg",
+    farcasterId: username.startsWith('@') ? username : `@${username}`,
+    walletAddress: formatAddress(walletAddress),
+    fullWalletAddress: walletAddress,
+    displayName,
+    isConnected,
+  }
+
+  // Call ready() after component mounts and content is visible
+  useEffect(() => {
+    if (isSDKLoaded && !isMiniAppReady) {
+      // Small delay to ensure DOM is painted
+      const timer = setTimeout(() => {
+        setMiniAppReady()
+      }, 100)
+      return () => clearTimeout(timer)
+    }
+  }, [isSDKLoaded, isMiniAppReady, setMiniAppReady])
+
+  // Show loading state only while SDK is loading
+  if (!isSDKLoaded) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading zkFluencer...</p>
+        </div>
+      </div>
+    )
   }
 
   const campaigns = [
@@ -60,24 +104,17 @@ export default function HomePage() {
             <h1 className="text-lg sm:text-xl font-bold tracking-tight">zkFluencer</h1>
           </div>
           <div className="flex items-center gap-2">
-            <Link href="/dashboard">
+            <Link href="/creator/feed">
+              <Button variant="ghost" size="sm" className="text-xs sm:text-sm font-medium px-2 sm:px-3">
+                Feed
+              </Button>
+            </Link>
+            <Link href="/creator/dashboard">
               <Button variant="ghost" size="sm" className="text-xs sm:text-sm font-medium px-2 sm:px-3">
                 Dashboard
               </Button>
             </Link>
-            <Link href="/profile">
-              <Button variant="ghost" size="sm" className="text-xs sm:text-sm font-medium px-2 sm:px-3">
-                Profile
-              </Button>
-            </Link>
             <ThemeToggle />
-            <Button
-              variant="outline"
-              size="sm"
-              className="text-xs sm:text-sm font-medium border-primary text-primary hover:bg-primary hover:text-white bg-transparent px-2 sm:px-3 hidden sm:flex"
-            >
-              Connect Wallet
-            </Button>
           </div>
         </div>
       </header>
@@ -93,11 +130,18 @@ export default function HomePage() {
             </div>
             <div className="w-full sm:w-auto flex items-center gap-3 sm:gap-4 bg-white/10 backdrop-blur-sm rounded-xl px-4 sm:px-5 py-3 border border-white/20">
               <Avatar className="h-10 w-10 ring-2 ring-white/30 flex-shrink-0">
-                <AvatarImage src={user.avatar || "/placeholder.svg"} alt="User avatar" />
-                <AvatarFallback className="bg-primary text-white">CR</AvatarFallback>
+                <AvatarImage src={user.avatar} alt={user.displayName} />
+                <AvatarFallback className="bg-primary text-white">
+                  {user.displayName.slice(0, 2).toUpperCase()}
+                </AvatarFallback>
               </Avatar>
               <div className="flex flex-col gap-0.5 min-w-0">
-                <div className="text-sm font-semibold text-white">{user.farcasterId}</div>
+                <div className="flex items-center gap-2">
+                  <div className="text-sm font-semibold text-white">{user.farcasterId}</div>
+                  {user.isConnected && (
+                    <div className="w-2 h-2 rounded-full bg-green-400 ring-2 ring-white/30"></div>
+                  )}
+                </div>
                 <div className="text-xs text-white/70 font-mono truncate" title={user.fullWalletAddress}>
                   {user.walletAddress}
                 </div>
@@ -170,16 +214,18 @@ export default function HomePage() {
           <div className="w-14 h-14 sm:w-16 sm:h-16 mx-auto mb-4 sm:mb-5 rounded-2xl bg-white/10 flex items-center justify-center">
             <Zap className="w-7 h-7 sm:w-8 sm:h-8 text-white" />
           </div>
-          <h3 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-3">Ready to get started?</h3>
+          <h3 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-3">Ready to explore campaigns?</h3>
           <p className="text-white/70 leading-relaxed mb-6 sm:mb-8 max-w-md mx-auto text-sm sm:text-base">
-            Connect your wallet to view earnings, track your campaigns, and unlock exclusive creator rewards
+            Browse active campaigns, earn rewards, and grow your influence in the Web3 creator economy
           </p>
-          <Button
-            size="lg"
-            className="px-6 sm:px-8 bg-primary hover:bg-primary/90 text-white font-semibold w-full sm:w-auto"
-          >
-            Connect Wallet
-          </Button>
+          <Link href="/creator/feed">
+            <Button
+              size="lg"
+              className="px-6 sm:px-8 bg-primary hover:bg-primary/90 text-white font-semibold w-full sm:w-auto"
+            >
+              View All Campaigns
+            </Button>
+          </Link>
         </Card>
       </main>
     </div>
