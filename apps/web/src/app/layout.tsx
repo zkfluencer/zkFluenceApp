@@ -3,6 +3,7 @@ import { Geist } from 'next/font/google';
 import './globals.css';
 
 import Providers from "@/components/providers"
+import { ThemeProvider } from "@/components/theme-provider"
 
 const geistSans = Geist({
   subsets: ['latin'],
@@ -46,13 +47,20 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="dark" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.variable} font-sans antialiased`}>
-        <div className="relative flex min-h-screen flex-col">
-          <Providers>
-            {children}
-          </Providers>
-        </div>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="light"
+          enableSystem={false}
+          disableTransitionOnChange
+        >
+          <div className="relative flex min-h-screen flex-col">
+            <Providers>
+              {children}
+            </Providers>
+          </div>
+        </ThemeProvider>
       </body>
     </html>
   );
