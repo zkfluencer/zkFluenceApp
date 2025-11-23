@@ -1,27 +1,18 @@
 "use client"
 
-import { useMiniApp } from "@/contexts/miniapp-context"
-import { useAccount } from "wagmi"
 import { CreatorHeader } from "@/components/creator-header"
-import { BottomNav } from "@/components/bottom-nav"
-import { CampaignCard } from "@/components/campaign-card"
-import { CampaignFilters } from "@/components/campaign-filters"
+import { TikTokCampaignCard } from "@/components/tiktok-campaign-card"
+import { DesktopCampaignCard } from "@/components/desktop-campaign-card"
 import { useState } from "react"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
+import { CampaignFilters } from "@/components/campaign-filters"
+import { BottomNav } from "@/components/bottom-nav"
 
 export default function CampaignsPage() {
-  const { context, isMiniAppReady } = useMiniApp()
-  const { address } = useAccount()
-  const [selectedCategory, setSelectedCategory] = useState("all")
-  const [minReward, setMinReward] = useState(0)
+  const [searchQuery, setSearchQuery] = useState("")
 
-  // Extract Farcaster user data
-  const user = context?.user
-  const username = user?.username || "creator"
-
-  // Mock CVS score - TODO: Fetch from backend API
-  const userCVS = 87
-
-  // Mock campaign data - TODO: Replace with API call
   const campaigns = [
     {
       id: "1",
@@ -30,129 +21,173 @@ export default function CampaignsPage() {
       companyLogo: "/placeholder.svg?height=48&width=48&text=CF",
       reward: 50,
       rewardToken: "USDC",
-      deadline: "2024-12-30",
-      spotsTotal: 20,
-      spotsTaken: 5,
+      deadline: "3 days left",
+      spotsLeft: 15,
       minCVS: 75,
-      regions: ["Global"],
-      duration: { min: 30, max: 90 },
-      keywords: ["Mobile", "Wallet", "Easy"],
-      eligibility: "eligible" as const,
+      backgroundImage: "/mobile-wallet-app-blockchain.jpg",
+      duration: "30-90s",
       description: "Create engaging content showcasing the new Celo mobile wallet features and ease of use.",
+      tags: ["Mobile", "Wallet", "Easy"],
+      premium: false,
     },
     {
       id: "2",
-      title: "DeFi Made Simple Campaign",
+      title: "DeFi Made Simple Educational Series",
       company: "Uniswap Labs",
       companyLogo: "/placeholder.svg?height=48&width=48&text=UL",
       reward: 75,
       rewardToken: "USDC",
-      deadline: "2024-12-25",
-      spotsTotal: 15,
-      spotsTaken: 7,
+      deadline: "1 week left",
+      spotsLeft: 8,
       minCVS: 80,
-      regions: ["Global"],
-      duration: { min: 45, max: 120 },
-      keywords: ["DeFi", "Trading", "Education"],
-      eligibility: (userCVS >= 80 ? "eligible" : "locked") as const,
+      backgroundImage: "/defi-trading-cryptocurrency.jpg",
+      duration: "60s",
       description: "Help educate viewers about DeFi concepts using Uniswap as examples.",
+      tags: ["DeFi", "Education", "Finance"],
+      premium: true,
     },
     {
       id: "3",
-      title: "NFT Marketplace Promotion",
+      title: "NFT Marketplace Creator Spotlight",
       company: "OpenSea",
       companyLogo: "/placeholder.svg?height=48&width=48&text=OS",
       reward: 100,
       rewardToken: "USDC",
-      deadline: "2024-12-28",
-      spotsTotal: 10,
-      spotsTaken: 7,
+      deadline: "5 days left",
+      spotsLeft: 3,
       minCVS: 90,
-      regions: ["Global"],
-      duration: { min: 60, max: 180 },
-      keywords: ["NFT", "Art", "Collection"],
-      eligibility: (userCVS >= 90 ? "eligible" : "partial") as const,
+      backgroundImage: "/nft-digital-art-marketplace.jpg",
+      duration: "90s",
       description: "Showcase your NFT collection and experience with OpenSea marketplace.",
-      missingRequirements: userCVS < 90 ? [`CVS Score ${userCVS}/90 - Improve your score to unlock`] : undefined,
+      tags: ["NFT", "Art", "Collectibles"],
+      premium: true,
     },
     {
       id: "4",
-      title: "Web3 Gaming Experience",
+      title: "Blockchain Gaming Platform Launch",
       company: "Immutable X",
       companyLogo: "/placeholder.svg?height=48&width=48&text=IX",
       reward: 60,
       rewardToken: "USDC",
-      deadline: "2025-01-05",
-      spotsTotal: 35,
-      spotsTaken: 7,
+      deadline: "2 weeks left",
+      spotsLeft: 28,
       minCVS: 70,
-      regions: ["Global"],
-      duration: { min: 30, max: 60 },
-      keywords: ["Gaming", "Play2Earn", "Fun"],
-      eligibility: "eligible" as const,
+      backgroundImage: "/gaming-esports-blockchain.jpg",
+      duration: "60-90s",
       description: "Promote the new blockchain gaming platform with exciting gameplay footage.",
+      tags: ["Gaming", "Play2Earn", "NFT"],
+      premium: false,
+    },
+    {
+      id: "5",
+      title: "Stablecoin Education Campaign",
+      company: "Circle",
+      companyLogo: "/placeholder.svg?height=48&width=48&text=CI",
+      reward: 80,
+      rewardToken: "USDC",
+      deadline: "3 weeks left",
+      spotsLeft: 52,
+      minCVS: 85,
+      backgroundImage: "/mobile-wallet-app-blockchain.jpg",
+      duration: "45-60s",
+      description: "Explain how USDC stablecoins work and their benefits for everyday transactions.",
+      tags: ["USDC", "Stablecoin", "Payments"],
+      premium: true,
+    },
+    {
+      id: "6",
+      title: "DAO Governance Tutorial Series",
+      company: "Aragon",
+      companyLogo: "/placeholder.svg?height=48&width=48&text=AR",
+      reward: 55,
+      rewardToken: "USDC",
+      deadline: "2 days left",
+      spotsLeft: 5,
+      minCVS: 75,
+      backgroundImage: "/defi-trading-cryptocurrency.jpg",
+      duration: "60s",
+      description: "Create educational content about DAO governance and decision-making.",
+      tags: ["DAO", "Governance", "Web3"],
+      premium: false,
     },
   ]
 
-  // Filter campaigns based on user selections
-  const filteredCampaigns = campaigns.filter((campaign) => {
-    const rewardMatch = campaign.reward >= minReward
-    return rewardMatch
-  })
-
-  // Loading state while Farcaster SDK initializes
-  if (!isMiniAppReady) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-background">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-      </div>
-    )
-  }
-
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <CreatorHeader username={username} />
+      <CreatorHeader username="cryptoartist" />
+
+      <div className="sticky top-16 left-0 right-0 z-40 px-4 py-3 bg-background/95 backdrop-blur-sm border-b border-border md:hidden">
+        <div className="flex gap-2 max-w-2xl mx-auto">
+          <div className="relative flex-1">
+            <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-lg">🔍</span>
+            <Input
+              type="search"
+              placeholder="Search campaigns..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10 h-11"
+            />
+          </div>
+
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button size="icon" variant="outline" className="h-11 w-11 bg-transparent">
+                <span className="text-lg">⚙️</span>
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="right" className="w-full sm:w-96">
+              <SheetHeader>
+                <SheetTitle>Filter Campaigns</SheetTitle>
+              </SheetHeader>
+              <div className="mt-6">
+                <CampaignFilters />
+              </div>
+            </SheetContent>
+          </Sheet>
+        </div>
+      </div>
 
       <main className="flex-1 overflow-y-auto pb-20 md:pb-8">
-        <div className="container mx-auto px-4 py-6 max-w-7xl">
-          {/* Page Header */}
-          <div className="mb-6">
-            <h1 className="text-3xl font-bold text-foreground mb-2">Browse Campaigns</h1>
-            <p className="text-muted-foreground">
-              Your CVS Score: <span className="text-primary font-bold">{userCVS}</span> - Find campaigns that match your profile
-            </p>
-          </div>
+        {/* Mobile: TikTok-style vertical scroll */}
+        <div className="md:hidden snap-y snap-mandatory min-h-screen overflow-y-scroll hide-scrollbar">
+          {campaigns.map((campaign) => (
+            <TikTokCampaignCard key={campaign.id} {...campaign} />
+          ))}
+        </div>
 
-          {/* Filters */}
-          <CampaignFilters
-            selectedCategory={selectedCategory}
-            onCategoryChange={setSelectedCategory}
-            minReward={minReward}
-            onMinRewardChange={setMinReward}
-          />
-
-          {/* Campaign Grid */}
-          <div className="space-y-4 mt-6">
-            {filteredCampaigns.map((campaign) => (
-              <CampaignCard key={campaign.id} {...campaign} />
-            ))}
-          </div>
-
-          {/* Empty State */}
-          {filteredCampaigns.length === 0 && (
-            <div className="text-center py-12">
-              <p className="text-xl text-muted-foreground mb-4">No campaigns match your filters</p>
-              <button
-                onClick={() => {
-                  setSelectedCategory("all")
-                  setMinReward(0)
-                }}
-                className="px-6 py-2 bg-primary text-primary-foreground rounded-lg font-medium hover:opacity-90 transition-opacity"
-              >
-                Clear Filters
-              </button>
+        {/* Desktop: Grid with search */}
+        <div className="hidden md:block">
+          <div className="container mx-auto max-w-7xl p-6">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h1 className="text-3xl font-bold mb-2">Discover Campaigns</h1>
+                <p className="text-muted-foreground">Find the perfect campaign for your audience</p>
+              </div>
             </div>
-          )}
+
+            <div className="flex gap-4 mb-6">
+              <div className="relative flex-1 max-w-xl">
+                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-lg">🔍</span>
+                <Input
+                  type="search"
+                  placeholder="Search campaigns..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10 h-11"
+                />
+              </div>
+              <Button variant="outline" className="bg-transparent">
+                <span className="mr-2">⚙️</span>
+                Filters
+              </Button>
+            </div>
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {campaigns.map((campaign) => (
+                <DesktopCampaignCard key={campaign.id} {...campaign} />
+              ))}
+            </div>
+          </div>
         </div>
       </main>
 

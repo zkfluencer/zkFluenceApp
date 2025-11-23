@@ -1,194 +1,179 @@
-"use client"
-
-import { useMiniApp } from "@/contexts/miniapp-context"
-import { useAccount } from "wagmi"
 import { CreatorHeader } from "@/components/creator-header"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
 import { BottomNav } from "@/components/bottom-nav"
-import { EarningsCard } from "@/components/earnings-card"
-import { PaymentHistory } from "@/components/payment-history"
-import { useState } from "react"
 
 export default function WalletPage() {
-  const { context, isMiniAppReady } = useMiniApp()
-  const { address, isConnected } = useAccount()
-  const [selectedPeriod, setSelectedPeriod] = useState("all")
-
-  // Extract Farcaster user data
-  const user = context?.user
-  const username = user?.username || "creator"
-
-  // Mock wallet data - TODO: Replace with smart contract integration
+  // Mock data
   const walletData = {
     balance: 1250.5,
-    pending: 175.0,
-    lifetime: 2450.75,
-    thisMonth: 425.0,
-    withdrawable: 1250.5,
+    totalEarned: 1850.0,
+    pendingPayments: 150.0,
+    payments: [
+      {
+        id: "1",
+        campaign: "Celo Wallet Mobile App Launch",
+        amount: 50,
+        txHash: "0xabcd1234567890abcd1234567890abcd1234567890abcd1234567890abcd1234",
+        timestamp: "2024-12-15T10:30:00",
+        status: "confirmed" as const,
+      },
+      {
+        id: "2",
+        campaign: "DeFi Made Simple Campaign",
+        amount: 75,
+        txHash: "0xef123456789012ef123456789012ef123456789012ef123456789012ef123456",
+        timestamp: "2024-12-14T14:20:00",
+        status: "confirmed" as const,
+      },
+      {
+        id: "3",
+        campaign: "Web3 Gaming Platform",
+        amount: 60,
+        txHash: "0x789012345678789012345678789012345678789012345678789012345678",
+        timestamp: "2024-12-10T09:15:00",
+        status: "confirmed" as const,
+      },
+    ],
   }
 
-  // Mock transaction history - TODO: Replace with blockchain query
-  const transactions = [
-    {
-      id: "1",
-      type: "earned",
-      campaign: "Celo Wallet Mobile App Launch",
-      amount: 50,
-      date: "2024-11-20T10:30:00Z",
-      status: "completed",
-      txHash: "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
-    },
-    {
-      id: "2",
-      type: "earned",
-      campaign: "DeFi Made Simple Campaign",
-      amount: 75,
-      date: "2024-11-18T14:20:00Z",
-      status: "completed",
-      txHash: "0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890",
-    },
-    {
-      id: "3",
-      type: "withdrawn",
-      campaign: "Withdrawal to wallet",
-      amount: -500,
-      date: "2024-11-15T09:15:00Z",
-      status: "completed",
-      txHash: "0x7890abcdef1234567890abcdef1234567890abcdef1234567890abcdef123456",
-    },
-    {
-      id: "4",
-      type: "pending",
-      campaign: "NFT Marketplace Promotion",
-      amount: 100,
-      date: "2024-11-22T16:45:00Z",
-      status: "pending",
-    },
-    {
-      id: "5",
-      type: "earned",
-      campaign: "Web3 Gaming Experience",
-      amount: 60,
-      date: "2024-11-10T11:00:00Z",
-      status: "completed",
-      txHash: "0xdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abc",
-    },
-  ]
-
-  // Filter transactions by period
-  const filteredTransactions = transactions.filter((tx) => {
-    if (selectedPeriod === "all") return true
-    const txDate = new Date(tx.date)
-    const now = new Date()
-    const daysDiff = Math.floor((now.getTime() - txDate.getTime()) / (1000 * 60 * 60 * 24))
-
-    if (selectedPeriod === "week") return daysDiff <= 7
-    if (selectedPeriod === "month") return daysDiff <= 30
-    return true
-  })
-
-  // Loading state
-  if (!isMiniAppReady) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-background">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-      </div>
-    )
-  }
+  const formatTxHash = (hash: string) => `${hash.slice(0, 6)}...${hash.slice(-4)}`
+  const getCeloscanUrl = (txHash: string) => `https://celoscan.io/tx/${txHash}`
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <CreatorHeader username={username} />
+      <CreatorHeader username="cryptoartist" />
 
       <main className="flex-1 overflow-y-auto pb-20 md:pb-8">
-        <div className="container mx-auto px-4 py-6 max-w-4xl">
-          {/* Wallet Header */}
-          <div className="mb-6">
-            <h1 className="text-3xl font-bold text-foreground mb-2">Wallet</h1>
-            <p className="text-muted-foreground">Manage your earnings and withdrawals</p>
+        <div className="container mx-auto px-4 py-6 max-w-5xl">
+          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary to-primary/70 p-8 mb-6 text-white shadow-xl">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-32 translate-x-32" />
+            <div className="relative z-10">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur flex items-center justify-center text-2xl">
+                    💰
+                  </div>
+                  <div>
+                    <p className="text-sm opacity-90">Total Balance</p>
+                    <p className="text-xs opacity-70">USDC on Celo</p>
+                  </div>
+                </div>
+                <Badge className="bg-white/20 backdrop-blur border-white/30 text-white">Connected</Badge>
+              </div>
+              <h1 className="text-5xl font-bold mb-2">${walletData.balance.toFixed(2)}</h1>
+              <p className="text-sm opacity-80">≈ {walletData.balance.toFixed(2)} USDC</p>
+            </div>
           </div>
 
-          {/* Wallet Connection Status */}
-          {!isConnected && (
-            <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-2xl p-5 mb-6">
-              <div className="flex items-center gap-3">
-                <div className="text-3xl">⚠️</div>
-                <div className="flex-1">
-                  <h3 className="font-bold text-foreground mb-1">Wallet Not Connected</h3>
-                  <p className="text-sm text-muted-foreground">Connect your wallet to view your USDC balance and make withdrawals</p>
-                </div>
-                <button className="px-4 py-2 bg-primary text-primary-foreground rounded-full text-sm font-medium hover:opacity-90 transition-opacity">
-                  Connect Wallet
-                </button>
-              </div>
-            </div>
-          )}
+          <div className="grid grid-cols-2 gap-4 mb-6">
+            <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
+              <CardContent className="p-6">
+                <div className="text-3xl mb-2">📈</div>
+                <p className="text-2xl font-bold text-foreground mb-1">${walletData.totalEarned.toFixed(2)}</p>
+                <p className="text-sm text-muted-foreground">Total Earned</p>
+              </CardContent>
+            </Card>
 
-          {/* Connected Wallet Address */}
-          {isConnected && address && (
-            <div className="bg-card rounded-2xl p-5 border border-border mb-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="text-sm text-muted-foreground mb-1">Connected Wallet</h3>
-                  <p className="text-lg font-mono text-foreground">{address.slice(0, 6)}...{address.slice(-4)}</p>
-                </div>
-                <div className="px-4 py-2 bg-[#B2EBA1]/10 text-[#4E632A] rounded-full text-sm font-medium">
-                  ✓ Connected
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Earnings Summary */}
-          <EarningsCard
-            totalEarnings={walletData.balance}
-            activeCampaigns={4}
-          />
-
-          {/* Withdrawal Section */}
-          <div className="bg-gradient-to-br from-primary/10 to-primary/5 rounded-2xl p-6 border border-primary/20 mb-6">
-            <h2 className="text-xl font-bold text-foreground mb-4">Withdraw Funds</h2>
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <p className="text-sm text-muted-foreground mb-1">Available to Withdraw</p>
-                <p className="text-3xl font-bold text-primary">${walletData.withdrawable} USDC</p>
-              </div>
-            </div>
-            <button
-              disabled={!isConnected || walletData.withdrawable === 0}
-              className="w-full bg-primary text-primary-foreground rounded-xl p-4 font-bold hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {!isConnected ? "Connect Wallet to Withdraw" : walletData.withdrawable === 0 ? "No Funds Available" : "Withdraw to Wallet"}
-            </button>
-            <p className="text-xs text-muted-foreground mt-3 text-center">
-              Funds are sent to your connected wallet on Celo network. Gas fees may apply.
-            </p>
+            <Card className="border-orange-500/20 bg-gradient-to-br from-orange-500/5 to-transparent">
+              <CardContent className="p-6">
+                <div className="text-3xl mb-2">⏳</div>
+                <p className="text-2xl font-bold text-foreground mb-1">${walletData.pendingPayments.toFixed(2)}</p>
+                <p className="text-sm text-muted-foreground">Pending</p>
+              </CardContent>
+            </Card>
           </div>
 
-          {/* Transaction History */}
-          <div>
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-bold text-foreground">Transaction History</h2>
-              <select
-                value={selectedPeriod}
-                onChange={(e) => setSelectedPeriod(e.target.value)}
-                className="px-3 py-2 bg-card border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-              >
-                <option value="all">All Time</option>
-                <option value="month">Last Month</option>
-                <option value="week">Last Week</option>
-              </select>
-            </div>
-
-            <PaymentHistory transactions={filteredTransactions} />
-
-            {filteredTransactions.length === 0 && (
-              <div className="bg-card rounded-2xl p-12 border border-border text-center">
-                <div className="text-5xl mb-4">💰</div>
-                <p className="text-lg text-muted-foreground">No transactions yet</p>
-                <p className="text-sm text-muted-foreground mt-2">Complete campaigns to start earning USDC</p>
+          <Card className="mb-6 border-primary/30 bg-gradient-to-br from-primary/10 to-transparent">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <span className="text-2xl">⚡</span>
+                Celo Network Benefits
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="text-center p-4 bg-background/50 rounded-xl">
+                  <p className="text-3xl font-bold text-primary mb-1">5-10s</p>
+                  <p className="text-xs text-muted-foreground">Confirmation Time</p>
+                </div>
+                <div className="text-center p-4 bg-background/50 rounded-xl">
+                  <p className="text-3xl font-bold text-primary mb-1">~$0.001</p>
+                  <p className="text-xs text-muted-foreground">Gas Fees</p>
+                </div>
               </div>
-            )}
-          </div>
+              <div className="mt-4 space-y-2">
+                <div className="flex items-center gap-3 text-sm">
+                  <span className="text-lg">✓</span>
+                  <span>Mobile-first blockchain designed for creators</span>
+                </div>
+                <div className="flex items-center gap-3 text-sm">
+                  <span className="text-lg">✓</span>
+                  <span>Instant settlements with near-zero fees</span>
+                </div>
+                <div className="flex items-center gap-3 text-sm">
+                  <span className="text-lg">✓</span>
+                  <span>Stable USDC rewards you can trust</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <span className="text-xl">📜</span>
+                Payment History
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {walletData.payments.map((payment, index) => (
+                  <div
+                    key={payment.id}
+                    className="relative p-4 rounded-xl border border-border bg-gradient-to-r from-primary/5 to-transparent hover:from-primary/10 transition-all"
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="text-lg">✅</span>
+                          <p className="font-semibold text-foreground text-sm">{payment.campaign}</p>
+                        </div>
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
+                          <code className="bg-secondary px-2 py-1 rounded text-xs">{formatTxHash(payment.txHash)}</code>
+                          <span>•</span>
+                          <span>{new Date(payment.timestamp).toLocaleDateString()}</span>
+                        </div>
+                        <a
+                          href={getCeloscanUrl(payment.txHash)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-xs text-primary hover:underline inline-flex items-center gap-1"
+                        >
+                          View on Celoscan
+                          <span className="text-sm">→</span>
+                        </a>
+                      </div>
+                      <div className="text-right flex-shrink-0">
+                        <p className="text-xl font-bold text-primary mb-1">+${payment.amount}</p>
+                        <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20 text-xs">
+                          Confirmed
+                        </Badge>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+
+                {walletData.payments.length === 0 && (
+                  <div className="text-center py-12">
+                    <div className="text-6xl mb-4">💸</div>
+                    <p className="text-muted-foreground">No payments yet</p>
+                    <p className="text-sm text-muted-foreground mt-1">Start completing campaigns to earn rewards!</p>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </main>
 

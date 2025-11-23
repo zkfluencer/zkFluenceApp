@@ -1,7 +1,5 @@
 "use client"
 
-import { useMiniApp } from "@/contexts/miniapp-context"
-import { useAccount } from "wagmi"
 import { CreatorHeader } from "@/components/creator-header"
 import { BottomNav } from "@/components/bottom-nav"
 import { OnboardingWizard } from "@/components/onboarding-wizard"
@@ -9,28 +7,24 @@ import Link from "next/link"
 import { useState } from "react"
 
 export default function CreatorDashboard() {
-  const { context, isMiniAppReady } = useMiniApp()
-  const { address } = useAccount()
   const [showWizard, setShowWizard] = useState(false)
 
-  // Extract real Farcaster user data
-  const user = context?.user
   const creatorData = {
-    fid: user?.fid?.toString() || "12345",
-    username: user?.username || "cryptoartist",
-    displayName: user?.displayName || "Crypto Artist",
-    pfpUrl: user?.pfpUrl || "/creator-avatar.png",
-    bio: user?.bio || "TikTok creator sharing Web3 knowledge",
-    isVerified: !!user?.verifications?.length,
-    region: "United States", // TODO: Get from Self.xyz verification
-    walletAddress: address ? `${address.slice(0, 6)}...${address.slice(-4)}` : "0x7a8f...9d2c",
-    tiktokConnected: false, // TODO: Check TikTok OAuth status
-    tiktokUsername: "cryptoartist_tk", // TODO: Get from TikTok OAuth
-    cvsScore: 87, // TODO: Fetch from backend API
-    totalEarnings: 1250.5, // TODO: Fetch from smart contract
-    activeCampaigns: 3, // TODO: Fetch from API
-    totalSubmissions: 24, // TODO: Fetch from API
-    approvedSubmissions: 21, // TODO: Fetch from API
+    fid: "12345",
+    username: "cryptoartist",
+    displayName: "Crypto Artist",
+    pfpUrl: "/creator-avatar.png",
+    bio: "TikTok creator sharing Web3 knowledge",
+    isVerified: true,
+    region: "United States",
+    walletAddress: "0x7a8f...9d2c",
+    tiktokConnected: true,
+    tiktokUsername: "cryptoartist_tk",
+    cvsScore: 87,
+    totalEarnings: 1250.5,
+    activeCampaigns: 3,
+    totalSubmissions: 24,
+    approvedSubmissions: 21,
   }
 
   const recentCampaigns = [
@@ -67,15 +61,6 @@ export default function CreatorDashboard() {
     { id: 4, emoji: "🚀", label: "Viral Hit", unlocked: false },
   ]
 
-  // Loading state
-  if (!isMiniAppReady) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-background">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-      </div>
-    )
-  }
-
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <CreatorHeader username={creatorData.username} />
@@ -83,11 +68,11 @@ export default function CreatorDashboard() {
       <main className="flex-1 overflow-y-auto pb-20 md:pb-8">
         <div className="container mx-auto px-4 py-6 max-w-7xl">
           {/* Hero Profile Section */}
-          <div className="relative bg-gradient-to-br from-primary/20 via-primary/10 to-transparent px-6 py-8 mb-6 rounded-2xl">
+          <div className="relative bg-gradient-to-br from-primary/20 via-primary/10 to-transparent px-6 py-8 mb-6">
             <div className="flex items-start gap-4 mb-6">
               <div className="relative">
                 <img
-                  src={creatorData.pfpUrl}
+                  src={creatorData.pfpUrl || "/placeholder.svg"}
                   alt={creatorData.displayName}
                   className="w-20 h-20 rounded-full border-4 border-primary/30 object-cover"
                 />
@@ -107,7 +92,7 @@ export default function CreatorDashboard() {
                     </span>
                   )}
                   <span className="px-3 py-1 bg-primary/10 text-primary text-xs rounded-full font-medium">
-                    FID: {creatorData.fid}
+                    {creatorData.region}
                   </span>
                 </div>
               </div>
@@ -215,7 +200,7 @@ export default function CreatorDashboard() {
                           <span
                             className={`px-2 py-1 rounded-full text-xs font-medium ${
                               campaign.status === "active"
-                                ? "bg-[#B2EBA1]/10 text-[#4E632A]"
+                                ? "bg-[#B2EBA1]/10 text-[#4E632A]" // Changed to Lime Green background and Forest Green text
                                 : campaign.status === "pending"
                                   ? "bg-yellow-500/10 text-yellow-600"
                                   : "bg-gray-500/10 text-gray-600"
@@ -239,7 +224,7 @@ export default function CreatorDashboard() {
               {achievements.map((achievement) => (
                 <div
                   key={achievement.id}
-                  className={`relative p-4 rounded-xl border-2 transition-all ${
+                  className={`p-4 rounded-xl border-2 transition-all ${
                     achievement.unlocked
                       ? "bg-[#B2EBA1]/10 text-[#4E632A] border-[#4E632A]/30"
                       : "bg-muted/30 text-muted-foreground border-border opacity-50"
@@ -294,7 +279,7 @@ export default function CreatorDashboard() {
       <BottomNav />
 
       {/* OnboardingWizard modal */}
-      <OnboardingWizard open={showWizard} onClose={() => setShowWizard(false)} />
+      <OnboardingWizard isOpen={showWizard} onClose={() => setShowWizard(false)} />
     </div>
   )
 }
