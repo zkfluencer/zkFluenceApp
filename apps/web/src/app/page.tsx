@@ -1,185 +1,155 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Zap, Users, TrendingUp } from "lucide-react"
-import Link from "next/link"
+import { useState, useEffect } from "react"
+import { useMiniApp } from "@/contexts/miniapp-context"
+import { useAccount, useConnect } from "wagmi"
+import { OnboardingWizard } from "@/components/onboarding-wizard"
+import { CreatorHeader } from "@/components/creator-header"
+import { TikTokCampaignCard } from "@/components/tiktok-campaign-card"
+import { DesktopCampaignCard } from "@/components/desktop-campaign-card"
+import { BottomNav } from "@/components/bottom-nav"
 
 export default function HomePage() {
-  const user = {
-    avatar: "/diverse-user-avatars.png",
-    farcasterId: "@creator_eth",
-    walletAddress: "0x742d...4a8C",
-    fullWalletAddress: "0x742d35Cc6634C0532925a3b844Bc9e7595f4a8C",
+  const { context, isMiniAppReady } = useMiniApp()
+  const { address, isConnected, isConnecting } = useAccount()
+  const { connect, connectors } = useConnect()
+  const [showOnboarding, setShowOnboarding] = useState(false)
+
+  // Auto-connect wallet when miniapp is ready
+  useEffect(() => {
+    if (isMiniAppReady && !isConnected && !isConnecting && connectors.length > 0) {
+      const farcasterConnector = connectors.find(c => c.id === 'farcaster')
+      if (farcasterConnector) {
+        connect({ connector: farcasterConnector })
+      }
+    }
+  }, [isMiniAppReady, isConnected, isConnecting, connectors, connect])
+
+  // Check onboarding completion
+  useEffect(() => {
+    if (isMiniAppReady) {
+      const hasCompletedOnboarding = localStorage.getItem("zkfluencer_onboarding_completed")
+      if (!hasCompletedOnboarding) {
+        setShowOnboarding(true)
+      }
+    }
+  }, [isMiniAppReady])
+
+  const handleOnboardingComplete = () => {
+    localStorage.setItem("zkfluencer_onboarding_completed", "true")
+    setShowOnboarding(false)
   }
 
+  // Extract real user data from Farcaster context
+  const user = context?.user
+  const username = user?.username || "creator"
+  const displayName = user?.displayName || "Creator"
+  const pfpUrl = user?.pfpUrl
+  const walletAddress = address || user?.custody || user?.verifications?.[0]
+
+  // Mock campaign data (will be replaced with API calls)
   const campaigns = [
     {
       id: "1",
-      title: "Share Celo Mobile Wallet Experience",
-      brand: "Valora",
-      description: "Create authentic content showcasing your experience with the Celo mobile wallet app",
-      participants: 142,
-      reward: 25,
-      totalPool: 3500,
-      category: "Social",
+      title: "Celo Wallet Mobile App Launch",
+      company: "Celo Foundation",
+      companyLogo: "/placeholder.svg?height=48&width=48&text=CF",
+      reward: 50,
+      rewardToken: "USDC",
+      deadline: "2024-12-30",
+      spotsLeft: 15,
+      minCVS: 75,
+      backgroundImage: "/mobile-wallet-app-blockchain.jpg",
+      duration: "30-90s",
+      description: "Create engaging content showcasing the new Celo mobile wallet features and ease of use.",
+      tags: ["Mobile", "Wallet", "Easy"],
     },
     {
       id: "2",
-      title: "DeFi Tutorial: Mint Your First NFT",
-      brand: "Celo Foundation",
-      description: "Create a beginner-friendly tutorial on minting NFTs on the Celo blockchain",
-      participants: 68,
-      reward: 40,
-      totalPool: 2720,
-      category: "Educational",
+      title: "DeFi Made Simple Campaign",
+      company: "Uniswap Labs",
+      companyLogo: "/placeholder.svg?height=48&width=48&text=UL",
+      reward: 75,
+      rewardToken: "USDC",
+      deadline: "2024-12-25",
+      spotsLeft: 8,
+      minCVS: 80,
+      backgroundImage: "/defi-trading-cryptocurrency.jpg",
+      duration: "45-120s",
+      description: "Help educate viewers about DeFi concepts using Uniswap as examples.",
+      tags: ["DeFi", "Trading", "Education"],
     },
     {
       id: "3",
-      title: "Ecosystem Review: Your Favorite Celo dApp",
-      brand: "Celo Community",
-      description: "Share an in-depth review of your favorite decentralized app in the Celo ecosystem",
-      participants: 34,
-      reward: 30,
-      totalPool: 1020,
-      category: "Review",
+      title: "NFT Marketplace Promotion",
+      company: "OpenSea",
+      companyLogo: "/placeholder.svg?height=48&width=48&text=OS",
+      reward: 100,
+      rewardToken: "USDC",
+      deadline: "2024-12-28",
+      spotsLeft: 3,
+      minCVS: 90,
+      backgroundImage: "/nft-digital-art-marketplace.jpg",
+      duration: "60-180s",
+      description: "Showcase your NFT collection and experience with OpenSea marketplace.",
+      tags: ["NFT", "Art", "Collection"],
+      premium: true,
+    },
+    {
+      id: "4",
+      title: "Web3 Gaming Experience",
+      company: "Immutable X",
+      companyLogo: "/placeholder.svg?height=48&width=48&text=IX",
+      reward: 60,
+      rewardToken: "USDC",
+      deadline: "2025-01-05",
+      spotsLeft: 28,
+      minCVS: 70,
+      backgroundImage: "/gaming-esports-blockchain.jpg",
+      duration: "30-60s",
+      description: "Promote the new blockchain gaming platform with exciting gameplay footage.",
+      tags: ["Gaming", "Play2Earn", "Fun"],
     },
   ]
 
+  // Loading state while Farcaster SDK initializes
+  if (!isMiniAppReady) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-background">
+        <div className="w-full max-w-md mx-auto p-8 text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading zkFluencer...</p>
+        </div>
+      </div>
+    )
+  }
+
   return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b border-border bg-[#635949]/5 backdrop-blur-sm sticky top-0 z-50">
-        <div className="container mx-auto max-w-4xl px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2 sm:gap-3">
-            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-primary flex items-center justify-center shadow-sm">
-              <Zap className="w-4 h-4 sm:w-5 sm:h-5 text-white fill-white" />
-            </div>
-            <h1 className="text-lg sm:text-xl font-bold tracking-tight">zkFluencer</h1>
-          </div>
-          <div className="flex items-center gap-2">
-            <Link href="/dashboard">
-              <Button variant="ghost" size="sm" className="text-xs sm:text-sm font-medium px-2 sm:px-3">
-                Dashboard
-              </Button>
-            </Link>
-            <Link href="/profile">
-              <Button variant="ghost" size="sm" className="text-xs sm:text-sm font-medium px-2 sm:px-3">
-                Profile
-              </Button>
-            </Link>
-            <Button
-              variant="outline"
-              size="sm"
-              className="text-xs sm:text-sm font-medium border-primary text-primary hover:bg-primary hover:text-white bg-transparent px-2 sm:px-3 hidden sm:flex"
-            >
-              Connect Wallet
-            </Button>
-          </div>
-        </div>
-      </header>
+    <div className="min-h-screen bg-background flex flex-col overflow-hidden">
+      <CreatorHeader username={username} compact />
 
-      <main className="container mx-auto max-w-4xl px-4 sm:px-6 py-6 sm:py-12">
-        <div className="mb-8 sm:mb-12 -mx-4 sm:-mx-6 px-4 sm:px-6 py-6 sm:py-8 bg-[#635949] text-white">
-          <div className="flex flex-col sm:flex-row items-start justify-between gap-4 sm:gap-6 mb-4 sm:mb-6">
-            <div className="flex-1">
-              <h2 className="text-2xl sm:text-4xl font-bold mb-2 sm:mb-3 tracking-tight">Active Campaigns</h2>
-              <p className="text-white/80 text-base sm:text-lg leading-relaxed">
-                Create authentic content, grow your influence, and earn rewards on Celo
-              </p>
-            </div>
-            <div className="w-full sm:w-auto flex items-center gap-3 sm:gap-4 bg-white/10 backdrop-blur-sm rounded-xl px-4 sm:px-5 py-3 border border-white/20">
-              <Avatar className="h-10 w-10 ring-2 ring-white/30 flex-shrink-0">
-                <AvatarImage src={user.avatar || "/placeholder.svg"} alt="User avatar" />
-                <AvatarFallback className="bg-primary text-white">CR</AvatarFallback>
-              </Avatar>
-              <div className="flex flex-col gap-0.5 min-w-0">
-                <div className="text-sm font-semibold text-white">{user.farcasterId}</div>
-                <div className="text-xs text-white/70 font-mono truncate" title={user.fullWalletAddress}>
-                  {user.walletAddress}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="space-y-4 sm:space-y-5">
-          {campaigns.map((campaign, index) => (
-            <Card
-              key={campaign.id}
-              className={`p-4 sm:p-6 hover:shadow-md transition-shadow border-border ${index % 2 === 1 ? "bg-card-alt" : ""}`}
-            >
-              <div className="space-y-4 sm:space-y-5">
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex flex-wrap items-center gap-2 mb-2">
-                      <Badge
-                        variant="secondary"
-                        className="text-xs font-medium px-2 py-0.5 bg-accent/10 text-accent border-0"
-                      >
-                        {campaign.category}
-                      </Badge>
-                      <span className="text-xs sm:text-sm text-muted-foreground">by {campaign.brand}</span>
-                    </div>
-                    <h3 className="font-semibold text-lg sm:text-xl mb-2 leading-snug">{campaign.title}</h3>
-                    <p className="text-muted-foreground text-sm leading-relaxed">{campaign.description}</p>
-                  </div>
-                </div>
-
-                <div className="flex flex-wrap items-center gap-4 sm:gap-6 py-3 px-3 sm:px-4 bg-secondary/50 rounded-lg">
-                  <div className="flex items-center gap-2">
-                    <Users className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-                    <span className="text-sm">
-                      <span className="font-semibold text-foreground">{campaign.participants}</span>
-                      <span className="text-muted-foreground ml-1">participants</span>
-                    </span>
-                  </div>
-                  <div className="h-4 w-px bg-border hidden sm:block" />
-                  <div className="flex items-center gap-2">
-                    <TrendingUp className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-                    <span className="text-sm">
-                      <span className="font-semibold text-foreground">{campaign.totalPool}</span>
-                      <span className="text-muted-foreground ml-1">CELO pool</span>
-                    </span>
-                  </div>
-                </div>
-
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-2">
-                  <div>
-                    <div className="text-sm text-muted-foreground mb-1">Earn up to</div>
-                    <div className="flex items-baseline gap-2">
-                      <span className="text-2xl font-bold text-primary">{campaign.reward}</span>
-                      <span className="text-sm text-muted-foreground font-medium">CELO</span>
-                    </div>
-                  </div>
-                  <Link href={`/creator/campaigns/${campaign.id}/start`} className="w-full sm:w-auto">
-                    <Button className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-white px-6">
-                      Start Campaign
-                    </Button>
-                  </Link>
-                </div>
-              </div>
-            </Card>
+      {/* Main Content */}
+      <main className="flex-1 overflow-y-auto pb-20 md:pb-0">
+        {/* Mobile: TikTok-style vertical scroll */}
+        <div className="md:hidden snap-y snap-mandatory h-full scrollbar-hide">
+          {campaigns.map((campaign) => (
+            <TikTokCampaignCard key={campaign.id} {...campaign} />
           ))}
         </div>
 
-        <Card className="mt-12 sm:mt-16 p-6 sm:p-10 text-center bg-[#1a0329] border-[#1a0329] text-white">
-          <div className="w-14 h-14 sm:w-16 sm:h-16 mx-auto mb-4 sm:mb-5 rounded-2xl bg-white/10 flex items-center justify-center">
-            <Zap className="w-7 h-7 sm:w-8 sm:h-8 text-white" />
-          </div>
-          <h3 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-3">Ready to get started?</h3>
-          <p className="text-white/70 leading-relaxed mb-6 sm:mb-8 max-w-md mx-auto text-sm sm:text-base">
-            Connect your wallet to view earnings, track your campaigns, and unlock exclusive creator rewards
-          </p>
-          <Button
-            size="lg"
-            className="px-6 sm:px-8 bg-primary hover:bg-primary/90 text-white font-semibold w-full sm:w-auto"
-          >
-            Connect Wallet
-          </Button>
-        </Card>
+        {/* Desktop: Grid layout */}
+        <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-6 p-6 container mx-auto max-w-7xl">
+          {campaigns.map((campaign) => (
+            <DesktopCampaignCard key={campaign.id} {...campaign} />
+          ))}
+        </div>
       </main>
+
+      {/* Bottom Navigation */}
+      <BottomNav />
+
+      {/* Onboarding Wizard for first-time users */}
+      <OnboardingWizard open={showOnboarding} onClose={handleOnboardingComplete} />
     </div>
   )
 }
