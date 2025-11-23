@@ -22,7 +22,7 @@ export const TIKTOK_CONFIG = {
 /**
  * Generate TikTok OAuth authorization URL
  */
-export function getTikTokAuthUrl(redirectUri: string): string {
+export function getTikTokAuthUrl(redirectUri: string, state?: string): string {
   const clientKey = process.env.NEXT_PUBLIC_TIKTOK_CLIENT_KEY
 
   if (!clientKey) {
@@ -34,7 +34,7 @@ export function getTikTokAuthUrl(redirectUri: string): string {
     scope: TIKTOK_CONFIG.scopes,
     response_type: TIKTOK_CONFIG.responseType,
     redirect_uri: redirectUri,
-    state: TIKTOK_CONFIG.state(),
+    state: state || TIKTOK_CONFIG.state(),
   })
 
   return `${TIKTOK_CONFIG.authUrl}?${params.toString()}`

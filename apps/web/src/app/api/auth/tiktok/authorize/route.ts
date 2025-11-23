@@ -7,16 +7,20 @@ export async function GET(request: Request) {
     const returnUrl = searchParams.get('return_url') || '/creator/profile'
     const fid = searchParams.get('fid') // Farcaster FID
 
-    // Build redirect URI
+    // Build redirect URI (MUST NOT include query params - TikTok requires exact match)
     const baseUrl = process.env.NEXT_PUBLIC_URL || 'http://localhost:3000'
-    const callbackParams = new URLSearchParams()
-    if (returnUrl) callbackParams.set('return_url', returnUrl)
-    if (fid) callbackParams.set('fid', fid)
+    const redirectUri = `${baseUrl}/api/auth/tiktok/callback`
 
-    const redirectUri = `${baseUrl}/api/auth/tiktok/callback?${callbackParams.toString()}`
+    // Encode callback params in state parameter (Base64 JSON)
+    const stateData = {
+      return_url: returnUrl,
+      fid: fid,
+      timestamp: Date.now(),
+    }
+    const state = Buffer.from(JSON.stringify(stateData)).toString('base64url')
 
-    // Generate TikTok authorization URL
-    const authUrl = getTikTokAuthUrl(redirectUri)
+    // Generate TikTok authorization URL with state
+    const authUrl = getTikTokAuthUrl(redirectUri, state)
 
     // Redirect to TikTok OAuth
     return NextResponse.redirect(authUrl)
